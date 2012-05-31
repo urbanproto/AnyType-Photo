@@ -16,19 +16,25 @@ public class Shape extends Activity{
 	private int  	id;
 	private int[]   x_points;
 	private int[]   y_points;
-	private Globals g;
 	private Bitmap  image;
+	private Bitmap 	edited;
+	private Path 	path;
+	
 
 
-	public Shape(int id, Globals g){
+	public Shape(int id){
 		this.id = id;
-		this.g = g;
         Log.d("Shape", "Initialized "+id);
 	}
 
 	public void setPoints(int[] x, int[]y){
 		x_points = x;
 		y_points = y;
+	}
+	
+	
+	public Path getPath(){
+		return path;
 	}
 	
 
@@ -63,51 +69,61 @@ public class Shape extends Activity{
 	 * @return true if successful, false if not
 	 */
 	public boolean createShapeImage(){
-
+		Log.d("Create Shape Image", "Entered");
+		
 		Paint 	p = new Paint();
-		float[]   pts = getPoints();
-		Bitmap 	base = Bitmap.createBitmap(1024, 800, Bitmap.Config.ARGB_8888);
+		Bitmap  base = Bitmap.createBitmap(1024, 800, Bitmap.Config.ARGB_8888);
 		Canvas 	c = new Canvas(base);
+		
+		//initialize the path for the clipping
+		Path path = new Path();
+		path.moveTo(x_points[0], y_points[0]);
+		for(int i = 1; i < x_points.length; i++) path.lineTo(x_points[i], y_points[i]);
+		path.lineTo(x_points[0], y_points[0]);
+			
+		RectF bounds = new RectF();
+		boolean  exact = true;
+		path.computeBounds(bounds, exact);
+		edited = Bitmap.createBitmap((int)Math.ceil(bounds.width()), (int)Math.ceil(bounds.height()), Bitmap.Config.ARGB_8888);
+		Log.d("Create Shape Image", "Bounds of Edited "+(int)Math.ceil(bounds.width())+", "+(int)Math.ceil(bounds.height()));
+
+		
+		
 
 
-		image = BitmapFactory.decodeFile(g.getPath() + File.separator +
+		image = BitmapFactory.decodeFile(Globals.getPath() + File.separator +
 				"IMG_"+ Integer.toString(id) + ".jpg");
 
+		Log.d("Create Shape Image", "Image Loaded");
 
 		p.setARGB(255, 0, 0, 0);
 		p.setStyle(Paint.Style.FILL);
 
 		//draw this image to the bitmap with background white and foreground shape black
 		c.drawARGB(255, 255, 255, 255);
-		c.drawLines(pts, p);
+        c.drawPath(path, p);
 
+		Log.d("Create Shape Image", "Canvas Drawn");
 
-		//go through and update the pixels 
-		for(int i = 0; i < image.getWidth(); i++){
-			for(int j = 0; j < image.getHeight(); j++){
-				if(base.getPixel(i, j) == Color.WHITE) image.setPixel(i, j, Color.TRANSPARENT);	
-			}
-		}
+//		//go through and update the pixels 
+//		for(int i = 0; i < image.getWidth(); i++){
+//			for(int j = 0; j < image.getHeight(); j++){
+//				if(base.getPixel(i, j) == Color.WHITE) image.setPixel(i, j, Color.TRANSPARENT);	
+//			}
+//		}
+		
+		Log.d("Create Shape Image", "Image Created");
+
 
 		return true;
 	}
-
 	
-	public float[] getPoints(){
-		float[]   pts = new float[x_points.length + y_points.length];
-		for(int i = 0; i < pts.length; i++){
-			pts[i] = 0;
-		}
-
-		//convert x_points and y_points into a single array
-		for(int i = 0; i < (x_points.length + y_points.length); i++){
-			if(i % 2 == 0) pts[i] = x_points[i/2];
-			else pts[i] = y_points[i/2];
-		}
-		
-		System.out.println("Get Points Out: "+pts.length+" and  "+pts[0]);
-		
-		return pts;
+	public int[] getXPoints(){
+		return x_points;
+	}
+	
+	public int[] getYPoints(){
+		return y_points;
 	}
 	
 	public int getId(){

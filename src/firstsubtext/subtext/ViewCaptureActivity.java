@@ -14,6 +14,7 @@ import java.util.Date;
 import firstsubtext.subtext.R.id;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.os.Bundle;
@@ -30,7 +31,9 @@ import android.view.ViewGroup.LayoutParams;
 //each activity is a state. 
 //this is the photo capture activity. It takes a picture 
 public class ViewCaptureActivity extends Activity {
-
+	
+	public static final int MEDIA_TYPE_IMAGE = 1;
+	public static final int MEDIA_TYPE_VIDEO = 2;
 	protected static final String TAG = "ViewCaptureActivity";
 	private DrawShapeOnTop shapeView;
 
@@ -50,6 +53,29 @@ public class ViewCaptureActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				setResult(1); //return true for accepted
+			
+				//save the picture
+				Log.d("Capture Activity", "Picture Taken");
+
+				File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
+				if (pictureFile == null) {
+					return;
+				}
+
+				try {
+					FileOutputStream fos = new FileOutputStream(pictureFile);
+					Bitmap bmap = shapeView.getShapeImageOut();
+					bmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+					fos.close();
+					Log.d("Capture Activity", "File Created");
+					
+
+				} catch (FileNotFoundException e) {
+					Log.d(TAG, "File not found: " + e.getMessage());
+				} catch (IOException e) {
+					Log.d(TAG, "Error accessing file: " + e.getMessage());
+				}
+				//end save the picture
 				Globals.nextStage();
 				finish();
 			}
@@ -74,5 +100,19 @@ public class ViewCaptureActivity extends Activity {
 				LayoutParams.WRAP_CONTENT));
 
 	}
+	
+	/** Create a File for saving an image or video */
+	private static File getOutputMediaFile(int type) {
+
+		// Create a media file name
+		File mediaFile;
+		mediaFile = new File(Globals.getPath() + File.separator
+					+ "IMG_" + Integer.toString(Globals.stage) + "_CROP.jpg");
+		
+		return mediaFile;
+	}
+	
+	
+
 
 }

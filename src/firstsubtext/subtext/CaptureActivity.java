@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import data.Shape;
 import firstsubtext.subtext.R.id;
@@ -23,7 +24,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
+import android.hardware.Camera.Size;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -54,7 +57,10 @@ public class CaptureActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
+		
 		setContentView(R.layout.cameracapture);
+		
 
 		// Add a listener to the Capture button
 		Button captureButton = (Button) findViewById(id.button_capture);
@@ -105,6 +111,18 @@ public class CaptureActivity extends Activity {
 		Camera c = null;
 		try {
 			c = Camera.open(); // attempt to get a Camera instance
+//			Parameters cp = c.getParameters();
+//			List<Size> ls = cp.getSupportedPictureSizes();
+//			Iterator it = ls.iterator();
+//			
+//			while(it.hasNext()){
+//				Size t = (Size) it.next();
+//				Log.d("Params:", t.width+", "+t.height);
+//			}
+//			
+//			cp.setPictureSize(ls.get(5).width, ls.get(5).height);
+//			cp.setPreviewSize(ls.get(5).width, ls.get(5).height);
+			
 		} catch (Exception e) {
 			// Camera is not available (in use or does not exist)
 			System.out.println("camera does not exist or is in use");
@@ -162,7 +180,6 @@ public class CaptureActivity extends Activity {
 		public void onPictureTaken(byte[] data, Camera camera) {
 			Log.d("Capture Activity", "Picture Taken");
 
-			
 			File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
 			if (pictureFile == null) {
 				return;
@@ -173,6 +190,7 @@ public class CaptureActivity extends Activity {
 				fos.write(data);
 				fos.close();
 				Log.d("Capture Activity", "File Created");
+				
 
 			} catch (FileNotFoundException e) {
 				Log.d(TAG, "File not found: " + e.getMessage());

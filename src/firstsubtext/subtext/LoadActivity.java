@@ -106,6 +106,106 @@ public class LoadActivity extends Activity {
 		}
 
 	}
+	
+	
+	public void loadLetters() {
+		int ndx = 0;
+		int count = 0;
+		InputStream is;
+		ArrayList x = new ArrayList();
+		ArrayList y = new ArrayList();
+		ArrayList z = new ArrayList();
+		ArrayList shape_ids = new ArrayList();
+		Iterator it;
+		String[] data = new String[4];
+
+		for (int id = 0; id < 26; id++) {
+			x.clear();
+			y.clear();
+			z.clear();
+			shape_ids.clear();
+			
+			try {
+
+				String str = "";
+				Log.d("Load Shape", "Switch " + id);
+
+				if(id == 0) is = this.getResources().openRawResource(R.raw.a);
+				else if(id == 1) is = this.getResources().openRawResource(R.raw.b);
+				else if(id == 2) is = this.getResources().openRawResource(R.raw.c);
+				else if(id == 3)is = this.getResources().openRawResource(R.raw.d);
+				else if(id == 4) is = this.getResources().openRawResource(R.raw.e);
+				else if(id == 5) is = this.getResources().openRawResource(R.raw.f);
+				else if(id == 6)is = this.getResources().openRawResource(R.raw.g);
+				else if(id == 7) is = this.getResources().openRawResource(R.raw.h);
+				else if(id == 8) is = this.getResources().openRawResource(R.raw.i);
+				else if(id == 9)is = this.getResources().openRawResource(R.raw.j);
+				else if(id == 10) is = this.getResources().openRawResource(R.raw.k);
+				else if(id == 11) is = this.getResources().openRawResource(R.raw.l);
+				else if(id == 12)is = this.getResources().openRawResource(R.raw.m);
+				else if(id == 13) is = this.getResources().openRawResource(R.raw.n);
+				else if(id == 14) is = this.getResources().openRawResource(R.raw.o);
+				else if(id == 15)is = this.getResources().openRawResource(R.raw.p);
+				else if(id == 16) is = this.getResources().openRawResource(R.raw.q);
+				else if(id == 17) is = this.getResources().openRawResource(R.raw.r);
+				else if(id == 18)is = this.getResources().openRawResource(R.raw.s);
+				else if(id == 19) is = this.getResources().openRawResource(R.raw.t);
+				else if(id == 20) is = this.getResources().openRawResource(R.raw.u);
+				else if(id == 21)is = this.getResources().openRawResource(R.raw.v);
+				else if(id == 22) is = this.getResources().openRawResource(R.raw.w);
+				else if(id == 23) is = this.getResources().openRawResource(R.raw.x);
+				else if(id == 24)is = this.getResources().openRawResource(R.raw.y);
+				else is = this.getResources().openRawResource(R.raw.z);
+				
+
+				Log.d("Load Letter", "Shape " + id + "Loaded");
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(is));
+				if (is != null) {
+					while ((str = reader.readLine()) != null) {
+						Log.d("Load Shape", "Reading: " + str);
+						data = str.split(",");
+						x.add(Integer.valueOf(data[0].trim()));
+						y.add(Integer.valueOf(data[1].trim()));
+						z.add(Integer.valueOf(data[2].trim()));
+						shape_ids.add(Integer.valueOf(data[3].trim()));
+
+					}
+				}
+				is.close();
+
+			} catch (IOException e) {// Catch exception if any
+				System.err.println("Error: " + e.getMessage());
+			}
+
+			// add the points to the arrays
+			it = x.iterator();
+			int[] x_points = new int[x.size()];
+			ndx = 0;
+			while (it.hasNext()) {
+				x_points[ndx++] = (Integer) it.next();
+			}
+
+			
+			it = y.iterator();
+			int[] y_points = new int[y.size()];
+			ndx = 0;
+			while (it.hasNext()) {
+				y_points[ndx++] = (Integer) it.next();
+			}
+			
+			it = shape_ids.iterator();
+			int[] shape_info = new int[shape_ids.size()];
+			ndx = 0;
+			while (it.hasNext()) {
+				shape_info[ndx++] = (Integer) it.next();
+			}
+
+			environment.getLetter(id).setInfo(x_points, y_points, shape_info);
+
+		}
+
+	}
 
 	/** Called when the activity is first created. */
 	@Override
