@@ -75,39 +75,41 @@ public class Globals {
     		//get the pixels from the current screen
     		Bitmap  bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
     		Canvas  c = new Canvas(bitmap);
-    		c.drawColor(Color.TRANSPARENT);
     		
+    		c.drawColor(Color.TRANSPARENT);
     		int[] x_points = letters[i].getXPoints();
     		int[] y_points = letters[i].getYPoints();
     		float[] rots = letters[i].getRotations();
     		int[] shape_ids = letters[i].getShapeIds();
-    		
-    		Log.d("Canvas", "Loaded Points");
-
+    	
     		
     		for(int j = 0; j < x_points.length; j++){
-        		Log.d("Canvas", "Draw Point: "+j);
         		
         		Matrix m = new Matrix();
         		
     			try{
-    				m.setScale(1/Globals.shapeStretch, 1/Globals.shapeStretch);    			
+    				//m.setScale(1/Globals.shapeStretch, 1/Globals.shapeStretch);  
     			}catch(Exception e){
     	    		Log.d("Canvas", "Matrix Execption");
     			}
     			
         		offset = shapes[shape_ids[j]].getOffset();
-
     			c.save();
+    			if(i == 3){
+    				Log.d("Canvas", "Translate1 "+x_points[j]+", "+y_points[j]);
+    				Log.d("Canvas", "Rotate "+(int) Math.toDegrees(rots[j]));
+    				Log.d("Canvas", "Translate2 "+offset[0]+", "+offset[1]);
+
+    			}
+    			c.translate(x_points[j]*Globals.shapeStretch, y_points[j]*Globals.shapeStretch);
+    			c.rotate((int) Math.toDegrees(rots[j]));
+    			c.translate(offset[0]*Globals.shapeStretch, offset[1]*Globals.shapeStretch);
+    			
     			bmap = BitmapFactory.decodeFile(getTestPath() + File.separator +
     					"IMG_"+ Integer.toString(shape_ids[j]) + "_CROP.png");
-    			
-    			
-    			c.translate(x_points[j], y_points[j]);
-    			c.rotate((int) Math.toDegrees(-rots[j]));
-
-    			
     			c.drawBitmap(bmap, m, null);
+    			
+    			
 //    			Paint p = new Paint();
 //    			p.setColor(Color.YELLOW);
 //    			p.setStyle(Paint.Style.STROKE);

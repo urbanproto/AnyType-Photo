@@ -233,19 +233,6 @@ public class LoadActivity extends Activity {
 			Globals.shapes[i].offset(correct_x, correct_y);
 		}
 		
-		for(int i = 0; i < Globals.letters.length; i++){
-			l = Globals.letters[i];
-			shapes = l.getShapeIds();
-			x = l.getXPoints();
-			y = l.getYPoints();
-			for(int j = 0; j < shapes.length; j++){
-				s = Globals.getShape(shapes[j]);
-				x[j] += skews[s.getId()].left;
-				y[j] += skews[s.getId()].top;
-			}
-			
-			l.cleanUp();
-		}
 	}
 
 	/** Called when the activity is first created. */
@@ -264,7 +251,7 @@ public class LoadActivity extends Activity {
 		setContentView(R.layout.main);
 		Log.d("Load Activity", "Loaded");
 		Intent intent = new Intent(this, CanvasActivity.class);
-		//Intent intent = new Intent(this, CaptureActivity.class);
+		////Intent intent = new Intent(this, CaptureActivity.class);
 		startActivity(intent);
 
 
