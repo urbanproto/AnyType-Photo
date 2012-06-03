@@ -5,6 +5,7 @@ import java.io.File;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -43,7 +44,7 @@ public class LetterAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        Bitmap b = BitmapFactory.decodeFile(Globals.getPath() + File.separator +
+        Bitmap b = BitmapFactory.decodeFile(Globals.getTestPath() + File.separator +
 				Globals.intToChar(position) + ".png");
         imageView.setImageBitmap(b);
      

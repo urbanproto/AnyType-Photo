@@ -59,18 +59,13 @@ public class Globals {
     }
     
     public static boolean buildLetters(){
-		Log.d("Canvas", "Enter Build Letters");
 
-    		int w = 600;
+    		int w = 600; //this is based on 2 * the bounding box size
     		int h = 600;
     		int[] offset;
     		Bitmap bmap;
-    		Rect letter_bounds;
 
     		for(int i = 0; i < letters.length; i++){
-    		Log.d("Canvas", "Building: "+intToChar(i));
-    		letter_bounds = letters[i].getBounds();
-    		Log.d("Bounds", intToChar(i)+": "+letter_bounds.left+" "+letter_bounds.top+" "+letter_bounds.right+" "+letter_bounds.bottom);
     	
     		//get the pixels from the current screen
     		Bitmap  bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
@@ -95,12 +90,7 @@ public class Globals {
     			
         		offset = shapes[shape_ids[j]].getOffset();
     			c.save();
-    			if(i == 3){
-    				Log.d("Canvas", "Translate1 "+x_points[j]+", "+y_points[j]);
-    				Log.d("Canvas", "Rotate "+(int) Math.toDegrees(rots[j]));
-    				Log.d("Canvas", "Translate2 "+offset[0]+", "+offset[1]);
 
-    			}
     			c.translate(x_points[j]*Globals.shapeStretch, y_points[j]*Globals.shapeStretch);
     			c.rotate((int) Math.toDegrees(rots[j]));
     			c.translate(offset[0]*Globals.shapeStretch, offset[1]*Globals.shapeStretch);
@@ -108,35 +98,23 @@ public class Globals {
     			bmap = BitmapFactory.decodeFile(getTestPath() + File.separator +
     					"IMG_"+ Integer.toString(shape_ids[j]) + "_CROP.png");
     			c.drawBitmap(bmap, m, null);
-    			
-    			
-//    			Paint p = new Paint();
-//    			p.setColor(Color.YELLOW);
-//    			p.setStyle(Paint.Style.STROKE);
-//    			Rect r = shapes[shape_ids[j]].getBounds();
-//    			r.right = r.right/2;
-//    			r.bottom = r.bottom/2;
-//    			c.drawRect(r, p);
     			c.restore();
 
     		}
     		
     		try{
-        		Log.d("Canvas", "Before Create Bitmap");
 
     			Bitmap out = Bitmap.createBitmap(bitmap,0, 0, w, h, new Matrix(), false);
     			File pictureFile = Globals.getOutputMediaFile(MEDIA_TYPE_IMAGE, intToChar(i) + ".png");
 				if (pictureFile == null) {
 					return false;
 				}
-        		Log.d("Canvas", "Before File Out");
 
     			
     			try {
 					FileOutputStream fos = new FileOutputStream(pictureFile);
 					out.compress(Bitmap.CompressFormat.PNG, 100, fos);
 					fos.close();
-					Log.d("Canvas", "File Created");
 					
 
 				} catch (FileNotFoundException e) {
@@ -145,7 +123,6 @@ public class Globals {
 					Log.d("Canvas", "Error accessing file: " + e.getMessage());
 				}
 				
-        		Log.d("Canvas", "Before File Out");
 
 				
     		}catch(IllegalArgumentException e){

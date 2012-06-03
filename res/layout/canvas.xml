@@ -12,7 +12,7 @@
             android:layout_height="72dp"
             android:gravity="center"
             android:numColumns="26"
-            android:columnWidth="20dp"
+            android:columnWidth="10dp"
             android:stretchMode="columnWidth"
             android:verticalSpacing="10dp"/>
 

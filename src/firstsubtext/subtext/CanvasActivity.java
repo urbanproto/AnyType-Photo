@@ -30,6 +30,7 @@ import android.hardware.Camera.Size;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -45,11 +46,16 @@ import android.widget.Toast;
 import android.view.ViewGroup.LayoutParams;
 //each activity is a state. 
 //this is the photo capture activity. It takes a picture 
-public class CanvasActivity extends Activity {
+
+
+
+
+public class CanvasActivity extends Activity implements OnTouchListener{
 
 	private GridView letter_grid;
 	private LetterView letter_view;
 
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -57,7 +63,7 @@ public class CanvasActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
 		//for now
-		Globals.buildLetters();
+		//Globals.buildLetters();
 		setContentView(R.layout.canvas);
 		
 	
@@ -67,42 +73,62 @@ public class CanvasActivity extends Activity {
 	    
 	    letter_grid.setOnItemClickListener(new OnItemClickListener() {
 	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-	        	Toast.makeText(CanvasActivity.this, "" + position, Toast.LENGTH_SHORT).show();
+	        	//Toast.makeText(CanvasActivity.this, "" + position, Toast.LENGTH_SHORT).show();
 	        	addToCanvas(position);
 	        }
 	    });
 	    
-	   
+		letter_view = new LetterView(this);
+		FrameLayout canvas = (FrameLayout) findViewById(R.id.canvas_frame);
+		canvas.addView(letter_view, new LayoutParams(LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT));
+		letter_view.setOnTouchListener(this);
+	       
 	    
 	   
 	}
 	
 	public void addToCanvas(int id){
-		LetterView letter_view = new LetterView(this, Globals.letters[id]);
-		FrameLayout canvas = (FrameLayout) findViewById(R.id.canvas_frame);
-		canvas.addView(letter_view, new LayoutParams(LayoutParams.WRAP_CONTENT,
-				LayoutParams.WRAP_CONTENT));
-		
-		
-		
-//		 letter_view.setOnTouchListener(new OnTouchListener()
-//		    {
-//		        @Override
-//		        public boolean onTouch(View v, MotionEvent event)
-//		        {
-//		            // now you know coordinates of touch
-//		            // store them
-//		            sideIndexX = event.getX();
-//		            sideIndexY = event.getY();
-//
-//		            doStuff();
-//
-//		            return false;
-//		        }
-//		    });
+		letter_view.addLetter(id);		
+		letter_view.invalidate();
 
-		
 	}
+	
+	 // Implement the OnTouchListener callback
+    public boolean onTouch(View v, MotionEvent event) {
+    	Log.d("Touch", "Action: "+event.getAction());
+    	Log.d("Touch", "Action Index: "+event.getActionIndex());
+
+    	int selected;
+    	
+    	LetterView lv = (LetterView) v;
+    	
+    	//we see a push to select
+    	if(event.getAction() == MotionEvent.ACTION_DOWN){
+    		
+    		selected = lv.locate((int)event.getX(), (int)event.getY());
+    		
+    		if(selected != lv.getCur() && lv.getCur() != -1) lv.deselect(lv.getCur());
+    		if(selected == -1) return true;
+    		lv.select(selected);
+
+    	//finger up - nothing selected
+    	}else if (event.getAction() == MotionEvent.ACTION_UP){
+    		selected = lv.getCur();
+    		if(selected != -1) lv.deselect(selected);
+    		
+    	}else if (event.getAction() == MotionEvent.ACTION_MOVE){
+    		selected = lv.getCur();
+    		if(selected == -1) return true;
+    		
+    		
+    		lv.updatePosition(event.getX(), event.getY());
+    	}else if(event.getActionIndex() == 1){
+    	}
+    	lv.invalidate();
+    	return true;
+    	
+    }
 
 
 	
