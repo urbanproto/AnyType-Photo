@@ -45,9 +45,7 @@ class DrawShapeOnTop extends View {
 				"IMG_"+ Integer.toString(shape.getId()) + ".jpg");
 		
 	
-		//set the path
-	    
-		
+
 		
 
 	}
@@ -57,6 +55,8 @@ class DrawShapeOnTop extends View {
 
 		Paint paint = new Paint();
 		Rect image_bound = new Rect(this.getTop(), this.getLeft(), this.getWidth(), this.getHeight());
+		Rect shape_bound = shape.getBounds();
+		Log.d("Bounds", shape_bound.top+", "+shape_bound.left+" "+shape_bound.right+", "+shape_bound.bottom);
 		
 		if(confirm){
 			canvas.drawBitmap(bmap, null,image_bound, null);
@@ -77,10 +77,10 @@ class DrawShapeOnTop extends View {
 			path.lineTo(x_points[i], y_points[i]);
 		path.lineTo(x_points[0], y_points[0]);
 		
-		//scale it to fit
+		//scale it to fit nicer
 		try {
 			Matrix m = new Matrix();
-			m.setScale(2.0f, 2.0f);
+			m.setScale(Globals.shapeStretch, Globals.shapeStretch);
 			path.transform(m);
 		} catch (Exception e) {
 			Log.d("Offset", "Matrix " + e.getMessage());
@@ -99,7 +99,7 @@ class DrawShapeOnTop extends View {
 		}
 
 		if (confirm)
-			canvas.drawText("Does this look right to you? ", 20, 50, paint);
+			canvas.drawText("Is this what you wanted?", 20, 50, paint);
 		else
 			canvas.drawText("Find something that fits into this shape...", 20,
 					50, paint);
@@ -116,6 +116,9 @@ class DrawShapeOnTop extends View {
 			canvas.drawPath(path, paint);
 
 		}
+		
+
+		
 
 		super.onDraw(canvas);
 	}
@@ -142,7 +145,7 @@ class DrawShapeOnTop extends View {
 		//scale it to fit
 		try {
 			Matrix m = new Matrix();
-			m.setScale(2.0f, 2.0f);
+			m.setScale(Globals.shapeStretch, Globals.shapeStretch);
 			path.transform(m);
 		} catch (Exception e) {
 			Log.d("Capture", "Matrix " + e.getMessage());
@@ -163,23 +166,14 @@ class DrawShapeOnTop extends View {
 			Log.d("Offset", e.getMessage());
 		}
 
-		//set the background to transparant
+		//set the background to transparent
 	    Rect image_bound = new Rect(this.getTop(), this.getLeft(), this.getWidth(), this.getHeight());
 		c.clipPath(path);
-		c.drawBitmap(bmap, null,image_bound, null);
-
-
-		//end draw arguments
-		
-		Log.d("Get Screen Bitmap", "Out");
-	
+		c.drawBitmap(bmap, null,image_bound, null);			
 		
 		//create a cropped version of the bitmap
 		Matrix m = new Matrix();
 		try{
-			Log.d("Offset", "Saving at :"+offset_x+" "+offset_y);
-			
-
 			Bitmap out = Bitmap.createBitmap(bitmap,offset_x, offset_y, (int) bounds.width(), (int) bounds.height(), m, false);
 			return out;
 		}catch(IllegalArgumentException e){

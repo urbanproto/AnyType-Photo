@@ -17,11 +17,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 
+import data.Letter;
 import data.Shape;
 import firstsubtext.subtext.R.id;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.os.Bundle;
@@ -77,7 +79,7 @@ public class LoadActivity extends Activity {
 						Log.d("Load Shape", "Reading: " + str);
 						data = str.split(",");
 						x.add(Integer.valueOf(data[0].trim()));
-						y.add(Integer.valueOf(data[1].trim()) * -1);
+						y.add(Integer.valueOf(data[1].trim()));
 					}
 				}
 				is.close();
@@ -128,7 +130,7 @@ public class LoadActivity extends Activity {
 			try {
 
 				String str = "";
-				Log.d("Load Shape", "Switch " + id);
+				Log.d("Load Letter", "Switch " + id);
 
 				if(id == 0) is = this.getResources().openRawResource(R.raw.a);
 				else if(id == 1) is = this.getResources().openRawResource(R.raw.b);
@@ -158,7 +160,7 @@ public class LoadActivity extends Activity {
 				else is = this.getResources().openRawResource(R.raw.z);
 				
 
-				Log.d("Load Letter", "Shape " + id + "Loaded");
+				Log.d("Load Letter", "Letter " + id + "Loaded");
 				BufferedReader reader = new BufferedReader(
 						new InputStreamReader(is));
 				if (is != null) {
@@ -167,7 +169,7 @@ public class LoadActivity extends Activity {
 						data = str.split(",");
 						x.add(Integer.valueOf(data[0].trim()));
 						y.add(Integer.valueOf(data[1].trim()));
-						z.add(Integer.valueOf(data[2].trim()));
+						z.add(Float.valueOf(data[2].trim()));
 						shape_ids.add(Integer.valueOf(data[3].trim()));
 
 					}
@@ -194,6 +196,14 @@ public class LoadActivity extends Activity {
 				y_points[ndx++] = (Integer) it.next();
 			}
 			
+			
+			it = z.iterator();
+			float[] r = new float[z.size()];
+			ndx = 0;
+			while (it.hasNext()) {
+				r[ndx++] = (Float) it.next();
+			}
+			
 			it = shape_ids.iterator();
 			int[] shape_info = new int[shape_ids.size()];
 			ndx = 0;
@@ -201,10 +211,41 @@ public class LoadActivity extends Activity {
 				shape_info[ndx++] = (Integer) it.next();
 			}
 
-			environment.getLetter(id).setInfo(x_points, y_points, shape_info);
+			environment.getLetter(id).setInfo(x_points, y_points, r, shape_info);
 
 		}
 
+	}
+	
+	public void cleanUpShapes(){
+		Rect[] skews = new Rect[Globals.shapes.length];
+		Letter l;
+		Shape s;
+		int[] shapes, x, y;
+		int correct_x,correct_y;
+		
+		//make a list of all of the offsets of the points
+		for(int i = 0; i < Globals.shapes.length; i++){
+			Rect r = Globals.shapes[i].getBounds();
+			skews[i] = r;
+		    correct_x = -1*r.left;
+			correct_y = -1*r.top;
+			Globals.shapes[i].offset(correct_x, correct_y);
+		}
+		
+		for(int i = 0; i < Globals.letters.length; i++){
+			l = Globals.letters[i];
+			shapes = l.getShapeIds();
+			x = l.getXPoints();
+			y = l.getYPoints();
+			for(int j = 0; j < shapes.length; j++){
+				s = Globals.getShape(shapes[j]);
+				x[j] += skews[s.getId()].left;
+				y[j] += skews[s.getId()].top;
+			}
+			
+			l.cleanUp();
+		}
 	}
 
 	/** Called when the activity is first created. */
@@ -217,12 +258,13 @@ public class LoadActivity extends Activity {
 				new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
 
 		loadShapes();
+		loadLetters();
+		cleanUpShapes();
 
 		setContentView(R.layout.main);
-
-		
 		Log.d("Load Activity", "Loaded");
-		Intent intent = new Intent(this, CaptureActivity.class);
+		Intent intent = new Intent(this, CanvasActivity.class);
+		//Intent intent = new Intent(this, CaptureActivity.class);
 		startActivity(intent);
 
 

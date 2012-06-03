@@ -19,6 +19,8 @@ public class Shape extends Activity{
 	private Bitmap  image;
 	private Bitmap 	edited;
 	private Path 	path;
+	private Rect 	bounds;
+	private int[]   offset; //the amount this shape was shifted from zero
 	
 
 
@@ -30,6 +32,37 @@ public class Shape extends Activity{
 	public void setPoints(int[] x, int[]y){
 		x_points = x;
 		y_points = y;
+		makeBounds();
+		offset = new int[2];
+		offset[0] = bounds.left;
+		offset[1] = bounds.top;
+	}
+	
+	public int[] getOffset(){
+		return offset;
+	}
+	
+	public void makeBounds(){
+		bounds = new Rect(1000000, 1000000, -1000000, -1000000);
+		
+		for(int i = 0; i < x_points.length; i++){
+			if(x_points[i] < bounds.left) bounds.left = x_points[i];
+			else if(x_points[i] > bounds.right) bounds.right = x_points[i];
+			if(y_points[i] < bounds.top) bounds.top = y_points[i];
+			else if(y_points[i] > bounds.bottom) bounds.bottom = y_points[i];
+		}
+	}
+	
+	public void offset(int x, int y){
+		for(int i = 0; i < x_points.length; i++){
+			x_points[i] += x;
+			y_points[i] += y;
+		}
+		makeBounds();		
+	}
+	
+	public Rect getBounds(){
+		return bounds;
 	}
 	
 	

@@ -47,7 +47,7 @@ public class CaptureActivity extends Activity {
 	public static final int MEDIA_TYPE_VIDEO = 2;
 	private Camera mCamera;
 	private CameraPreview mPreview;
-	private DrawShapeOnTop shapeView;
+	private static DrawShapeOnTop shapeView;
 	private FrameLayout preview;
 
 
@@ -56,9 +56,24 @@ public class CaptureActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		
+		//if we've captured all the images, move to the canvas stage
+		//if(Globals.stage > 4){
+//			Log.d("Canvas", "Create Intent");
+//			boolean success = Globals.buildLetters();
+//			Log.d("Canvas", "SUCCESS? "+success);
+//
+//			if(success){
+//				
+//			Intent intent = new Intent(this, CanvasActivity.class);
+//			startActivity(intent);
+//			}
+//			Globals.resetStage();
+
+		//}
+		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
-		
 		setContentView(R.layout.cameracapture);
 		
 
@@ -83,6 +98,7 @@ public class CaptureActivity extends Activity {
 		preview.addView(mPreview);
 		preview.addView(shapeView, new LayoutParams(LayoutParams.WRAP_CONTENT,
 				LayoutParams.WRAP_CONTENT));
+		
 
 	}
 
@@ -111,17 +127,26 @@ public class CaptureActivity extends Activity {
 		Camera c = null;
 		try {
 			c = Camera.open(); // attempt to get a Camera instance
-//			Parameters cp = c.getParameters();
-//			List<Size> ls = cp.getSupportedPictureSizes();
-//			Iterator it = ls.iterator();
-//			
-//			while(it.hasNext()){
-//				Size t = (Size) it.next();
-//				Log.d("Params:", t.width+", "+t.height);
-//			}
-//			
-//			cp.setPictureSize(ls.get(5).width, ls.get(5).height);
-//			cp.setPreviewSize(ls.get(5).width, ls.get(5).height);
+			Parameters parameters = c.getParameters();
+			
+			
+			/*List<String> focusModes = parameters.getSupportedFocusModes();
+			if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO))
+			{
+			    parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+			}
+			
+			parameters.setAntibanding(Camera.Parameters.ANTIBANDING_AUTO);
+			parameters.setAutoExposureLock(true);
+			
+			Log.d("Camera Settings: Antibanding: ", parameters.getAntibanding());
+			Log.d("Camera Settings: Focus mode: ", parameters.getFocusMode());
+			Log.d("Camera Settings: White Balance: ", parameters.getWhiteBalance());
+			Log.d("Camera Settings: Scene Mode: ", parameters.getSceneMode());
+			*/
+			parameters.setPictureSize(shapeView.getWidth(), shapeView.getHeight());
+	        c.setParameters(parameters);
+			
 			
 		} catch (Exception e) {
 			// Camera is not available (in use or does not exist)
