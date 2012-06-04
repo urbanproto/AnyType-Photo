@@ -27,6 +27,13 @@ class DrawShapeOnTop extends View {
 	int[] x_points;
 	int[] y_points;
 	Bitmap bmap;
+	private boolean custom;
+	private Path basePath;
+	private Path path;
+	private Path custom_path;
+	private float[] first;
+
+	private RectF pathBounds;
 
 	public DrawShapeOnTop(Context context, Shape s, boolean c) {
 		super(context);
@@ -47,6 +54,28 @@ class DrawShapeOnTop extends View {
 		 bmap = BitmapFactory.decodeFile(Globals.getPath() + File.separator +
 				"IMG_"+ Integer.toString(shape.getId()) + ".jpg");
 		
+		 path = new Path();
+			
+			path.moveTo(x_points[0], y_points[0]);
+			for (int i = 1; i < x_points.length; i++)
+				path.lineTo(x_points[i], y_points[i]);
+			path.lineTo(x_points[0], y_points[0]);
+			
+			try {
+				Matrix m = new Matrix();
+				m.setScale(Globals.shapeStretch, Globals.shapeStretch);
+				path.transform(m);
+			} catch (Exception e) {
+				Log.d("Offset", "Matrix " + e.getMessage());
+			}
+		
+			//compute the bounds
+			pathBounds = new RectF();
+			boolean  exact = true;
+			path.computeBounds(pathBounds, exact);
+			
+			basePath = new Path(path);
+		 
 	}
 
 	@Override
@@ -55,6 +84,7 @@ class DrawShapeOnTop extends View {
 		Paint paint = new Paint();
 		Rect image_bound = new Rect(this.getTop(), this.getLeft(), this.getWidth(), this.getHeight());
 		Rect shape_bound = shape.getBounds();
+		
 		Log.d("Bounds", shape_bound.top+", "+shape_bound.left+" "+shape_bound.right+", "+shape_bound.bottom);
 		
 		if(confirm){
@@ -70,33 +100,6 @@ class DrawShapeOnTop extends View {
 		paint.setStyle(Paint.Style.FILL);
 		paint.setColor(Color.BLACK);
 		
-		Path path = new Path();
-		path.moveTo(x_points[0], y_points[0]);
-		for (int i = 1; i < x_points.length; i++)
-			path.lineTo(x_points[i], y_points[i]);
-		path.lineTo(x_points[0], y_points[0]);
-		
-		//scale it to fit nicer
-		try {
-			Matrix m = new Matrix();
-			m.setScale(Globals.shapeStretch, Globals.shapeStretch);
-			path.transform(m);
-		} catch (Exception e) {
-			Log.d("Offset", "Matrix " + e.getMessage());
-		}
-		
-		//compute the bounds
-		RectF bounds = new RectF();
-		boolean  exact = true;
-		path.computeBounds(bounds, exact);
-		
-		//offset by bounds
-		try {
-			path.offset((this.getWidth()-bounds.width())/2, (this.getHeight()-bounds.height())/2);
-		} catch (Exception e) {
-			Log.d("Offset", e.getMessage());
-		}
-
 		if (confirm)
 			canvas.drawText("Is this what you wanted?", 20, 50, paint);
 		else
@@ -105,20 +108,29 @@ class DrawShapeOnTop extends View {
 
 		paint.setStyle(Paint.Style.STROKE);
 		paint.setColor(Color.YELLOW);
+		
+		if(!confirm || (confirm && !custom)){
+			try {
+			path.offset((this.getWidth()-pathBounds.width())/2, (this.getHeight()-pathBounds.height())/2);
+			} catch (Exception e) {
+			Log.d("Offset", e.getMessage());
+			}
+		}
 
 
 		if (confirm) {
 			canvas.clipPath(path);
 			canvas.drawBitmap(bmap, null,image_bound, null);
 
+			if(custom){
+				paint.setStyle(Paint.Style.STROKE);
+				paint.setColor(Color.CYAN);
+				paint.setStrokeWidth(4);
+				canvas.drawPath(custom_path, paint);
+			}
 		}else{
 			canvas.drawPath(path, paint);
-
 		}
-		
-
-		
-
 		super.onDraw(canvas);
 	}
 	
@@ -131,38 +143,26 @@ class DrawShapeOnTop extends View {
 		Bitmap  bitmap = Bitmap.createBitmap( this.getWidth(), this.getHeight(), Bitmap.Config.ARGB_8888);
 		Canvas  c = new Canvas(bitmap);
 		c.drawColor(Color.TRANSPARENT);
-
-		//draw same arguments from screen 
-		Paint paint = new Paint();
 		
-		Path path = new Path();
-		path.moveTo(x_points[0], y_points[0]);
-		for (int i = 1; i < x_points.length; i++)
-			path.lineTo(x_points[i], y_points[i]);
-		path.lineTo(x_points[0], y_points[0]);
-		
-		//scale it to fit
-		try {
-			Matrix m = new Matrix();
-			m.setScale(Globals.shapeStretch, Globals.shapeStretch);
-			path.transform(m);
-		} catch (Exception e) {
-			Log.d("Capture", "Matrix " + e.getMessage());
+		if(!custom){
+			path = new Path(basePath);
 		}
 		
 		//compute the bounds
-		RectF bounds = new RectF();
+		pathBounds = new RectF();
 		boolean  exact = true;
-		path.computeBounds(bounds, exact);
+		basePath.computeBounds(pathBounds, exact);
 		
-		offset_x = (int)(this.getWidth()-bounds.width())/2;
-		offset_y = (int)(this.getHeight()-bounds.height())/2;
+		offset_x = (int)(this.getWidth()-pathBounds.width())/2;
+		offset_y = (int)(this.getHeight()-pathBounds.height())/2;
 		
 		//offset by bounds
-		try {
-			path.offset(offset_x, offset_y);
-		} catch (Exception e) {
-			Log.d("Offset", e.getMessage());
+		if(!custom){
+			try {
+				path.offset(offset_x, offset_y);
+			} catch (Exception e) {
+				Log.d("Offset", e.getMessage());
+			}
 		}
 
 		//set the background to transparent
@@ -173,12 +173,51 @@ class DrawShapeOnTop extends View {
 		//create a cropped version of the bitmap
 		Matrix m = new Matrix();
 		try{
-			Bitmap out = Bitmap.createBitmap(bitmap,offset_x, offset_y, (int) bounds.width(), (int) bounds.height(), m, false);
+			Bitmap out = Bitmap.createBitmap(bitmap,offset_x, offset_y, (int) pathBounds.width(), (int) pathBounds.height(), m, false);
 			return out;
 		}catch(IllegalArgumentException e){
 			Log.d("Get Screen Bitmap", e.getMessage());
 		}
 		return bitmap;
+	}
+	
+	
+
+	public void startPath(float x, float y) {
+		path = new Path(basePath);
+		pathBounds = new RectF();
+		boolean  exact = true;
+		path.computeBounds(pathBounds, exact);
+		
+		try {
+			path.offset((this.getWidth()-pathBounds.width())/2, (this.getHeight()-pathBounds.height())/2);
+			} catch (Exception e) {
+			Log.d("Offset", e.getMessage());
+		}
+		
+		custom = true;
+		first = new float[2];
+		
+		first[0] = x;
+		first[1] = y;
+		
+		custom_path = new Path();
+		custom_path.moveTo(x, y);
+		
+		
+	}
+
+	public void endPath(float x, float y) {	
+		custom_path.lineTo(first[0], first[1]);
+		
+		path = new Path(custom_path);
+		pathBounds = new RectF();
+		boolean  exact = true;
+		path.computeBounds(pathBounds, exact);
+	}
+
+	public void addPathPoint(float x, float y) {
+		custom_path.lineTo(x, y);
 	}
 	
 

@@ -37,7 +37,9 @@ public class LetterInstance {
 		this.rotation = 0;
 		this.p = new Path();
 		
-		bitmap = BitmapFactory.decodeFile(Globals.getTestPath() + File.separator +Globals.intToChar(id)+".png");
+		File f = new File(Globals.getTestPath() + File.separator +Globals.intToChar(id)+".png");
+		bitmap = Globals.decodeSampledBitmapFromResource(f,600, 600);
+
 						
 		pos = new float[2];
 		pos[0] = 0;

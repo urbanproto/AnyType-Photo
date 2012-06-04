@@ -186,26 +186,9 @@ public class CaptureActivity extends Activity {
 		Log.d("Capture Activity", "Create Intent");
 
 		Intent intent = new Intent(this, ViewCaptureActivity.class);
-		//startActivityForResult(intent, 1);
 		startActivity(intent);
 	}
 
-//	// the page is loaded before this is called
-//	@Override
-//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//		// If the request went well (OK) and the request was
-//		// PICK_CONTACT_REQUEST
-//		if (resultCode == 1) {
-//			Globals.nextStage();
-//			Log.d("Capture Activity", "ADDING ONE TO STAGE");
-//
-//			preview.removeView(shapeView);
-//			shapeView = new DrawShapeOnTop(this, Globals.getStageShape());
-//			preview.addView(shapeView, new LayoutParams(
-//					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-//
-//		}
-//	}
 
 	private PictureCallback mPicture = new PictureCallback() {
 		@Override

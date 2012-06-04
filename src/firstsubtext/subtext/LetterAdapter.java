@@ -39,16 +39,13 @@ public class LetterAdapter extends BaseAdapter {
         ImageView imageView;
         if (convertView == null) {  // if it's not recycled, initialize some attributes
             imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
+            imageView.setLayoutParams(new GridView.LayoutParams(60, 60));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(8, 8, 8, 8);
         } else {
             imageView = (ImageView) convertView;
         }
 
-		Log.d("Canvas Call", "Loading Bitmap "+Globals.getTestPath() + File.separator +
-				Globals.intToChar(position) + ".png");
-        
 		File f = new File(Globals.getTestPath() + File.separator +Globals.intToChar(position) + ".png");
 		imageView.setImageBitmap(Globals.decodeSampledBitmapFromResource(f,60, 60));
 		     

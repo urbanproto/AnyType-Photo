@@ -21,9 +21,11 @@ import android.hardware.Camera.PictureCallback;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -31,11 +33,12 @@ import android.view.ViewGroup.LayoutParams;
 
 //each activity is a state. 
 //this is the photo capture activity. It takes a picture 
-public class ViewCaptureActivity extends Activity {
+public class ViewCaptureActivity extends Activity implements OnTouchListener{
 	
 
 	protected static final String TAG = "ViewCaptureActivity";
 	private DrawShapeOnTop shapeView;
+	private boolean two_finger;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -97,10 +100,36 @@ public class ViewCaptureActivity extends Activity {
 
 		// Create our Preview view and set it as the content of our activity.
 		shapeView = new DrawShapeOnTop(this, Globals.getStageShape(), true);
+		shapeView.setOnTouchListener(this);
 		FrameLayout preview = (FrameLayout) findViewById(id.camera_preview);
-		// preview.addView(mPreview);
 		preview.addView(shapeView, new LayoutParams(LayoutParams.WRAP_CONTENT,
 				LayoutParams.WRAP_CONTENT));
+
+	}
+	
+	
+	// Implement the OnTouchListener callback
+	public boolean onTouch(View v, MotionEvent event) {
+		Log.d("Touch", "Action: " + event.getAction());
+		Log.d("Touch", "Action Index: " + event.getActionIndex());
+
+		int selected;
+
+		DrawShapeOnTop dv = (DrawShapeOnTop) v;
+
+
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			dv.startPath(event.getX(), event.getY());
+
+			// finger up - nothing selected
+		} else if (event.getAction() == MotionEvent.ACTION_UP) {			
+			dv.endPath(event.getX(), event.getY());
+
+		} else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+			dv.addPathPoint(event.getX(), event.getY());
+		}
+		dv.invalidate();
+		return true;
 
 	}
 	

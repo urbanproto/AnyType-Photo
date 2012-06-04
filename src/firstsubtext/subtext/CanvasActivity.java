@@ -23,6 +23,7 @@ import firstsubtext.subtext.R.id;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
@@ -47,11 +48,13 @@ import android.view.ViewGroup.LayoutParams;
 //each activity is a state. 
 //this is the photo capture activity. It takes a picture 
 
+
 public class CanvasActivity extends Activity implements OnTouchListener {
 
 	private GridView letter_grid;
 	private LetterView letter_view;
 	private boolean two_finger = false;
+	private int savedNum = 0;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -84,7 +87,53 @@ public class CanvasActivity extends Activity implements OnTouchListener {
 		
 		Log.d("Canvas Call", "Ended Canvas");
 
+		Button saveButton = (Button) findViewById(id.button_save_canvas);
+		saveButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				saveScreen();
+			}
+		});
+		
+		Button resetButton = (Button) findViewById(id.button_reset);
+		resetButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				reset();
+			}
+		});
+		
 
+	}
+	
+	private void saveScreen(){
+		//save the picture
+
+		File pictureFile = Globals.getOutputMediaFile(Globals.MEDIA_TYPE_IMAGE, "MyCanvas_" + (savedNum++) + ".png");
+		if (pictureFile == null) {
+			return;
+		}
+
+
+		try {
+			FileOutputStream fos = new FileOutputStream(pictureFile);
+			Bitmap bmap = letter_view.getImageOut();
+			bmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+			fos.close();
+			Log.d("Capture Activity", "File Created");
+			
+
+		} catch (FileNotFoundException e) {
+			Log.d("", "File not found: " + e.getMessage());
+		} catch (IOException e) {
+			Log.d("", "Error accessing file: " + e.getMessage());
+		}
+		
+	}
+	
+	public void reset(){
+		Intent intent = new Intent(this, LoadActivity.class);
+		startActivity(intent);
 	}
 
 	public void addToCanvas(int id) {
@@ -106,6 +155,10 @@ public class CanvasActivity extends Activity implements OnTouchListener {
 			two_finger = !two_finger;
 			Log.d("Touch", "Two Finger: " + two_finger);
 
+			if(event.getActionIndex() > 1){
+				lv.removeCurrentLetter();
+			}
+			
 		} else if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			selected = lv.locate((int) event.getX(), (int) event.getY());
 
@@ -135,8 +188,8 @@ public class CanvasActivity extends Activity implements OnTouchListener {
 					lv.updateScale(Globals.getScale(event.getX(0),
 							event.getY(0), event.getX(1), event.getY(1)));
 					
-					lv.setRotations(Globals.getRotation(event.getX(0),
-							event.getY(0), event.getX(1), event.getY(1)));
+//					lv.setRotations(Globals.getRotation(event.getX(0),
+//							event.getY(0), event.getX(1), event.getY(1)));
 					
 					float[] center = Globals.getCenter(event.getX(0),
 							event.getY(0), event.getX(1), event.getY(1));

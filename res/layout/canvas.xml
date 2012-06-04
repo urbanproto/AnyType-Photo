@@ -7,22 +7,46 @@
 
         <GridView
             xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/letter_grid"
-            android:layout_width="fill_parent"
-            android:layout_height="72dp"
-            android:gravity="center"
-            android:numColumns="26"
-            android:columnWidth="10dp"
-            android:stretchMode="columnWidth"
-            android:verticalSpacing="10dp"/>
+            android:id="@+id/letter_grid"            
+            android:layout_width="fill_parent" 
+		    android:layout_height="100dp"
+		    android:columnWidth="20dp"
+		    android:numColumns="26"
+		    android:verticalSpacing="6dp"
+		    android:horizontalSpacing="6dp"
+		    android:stretchMode="columnWidth"
+		    android:gravity="center"
+          />
+        
+        
 
         <FrameLayout
             android:id="@+id/canvas_frame"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.94"
+            android:layout_weight="0.83"
             android:orientation="vertical" >
         </FrameLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="right|center_vertical">
+
+            <Button
+                android:id="@+id/button_reset"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Font" />
+
+            <Button
+                android:id="@+id/button_save_canvas"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Save Canvas" />
+
+        </LinearLayout>
 
 </LinearLayout>

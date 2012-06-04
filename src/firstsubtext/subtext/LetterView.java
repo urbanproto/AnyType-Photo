@@ -29,6 +29,7 @@ class LetterView extends View {
 
 	private HashMap<Integer, LetterInstance> letters;
 	private int cur;
+	private int uid = 0;
 	
 
 	public LetterView(Context context) {
@@ -91,17 +92,16 @@ class LetterView extends View {
 			LetterInstance li = (LetterInstance) me.getValue();
 			
 			if(li.contains(x, y)){
-				return li.getId();
+				return (Integer) me.getKey();
 			}
 		}
 		return -1;
 	}
 	
-	/**
-	 * See if we're over one of the letter instances
-	 * @param x
-	 * @param y
-	 */
+/**
+ * Selected the item at key in letters
+ * @param id
+ */
 	public void select(int id){
 		LetterInstance li = letters.get(id);
 		li.setFocus(true);
@@ -115,9 +115,14 @@ class LetterView extends View {
 		cur = -1;
 	}
 	
+	public void removeCurrentLetter(){
+		if(cur != -1) letters.remove(cur);
+		cur = -1;
+	}
+	
 	public void addLetter(int id){
-		letters.put(id, new LetterInstance(id));
-		cur = id;
+		letters.put((uid), new LetterInstance(id));
+		cur = uid++;
 	}
 	
 	public void updatePosition(float x, float y){
@@ -144,13 +149,23 @@ class LetterView extends View {
 		
 	}
 	
-	public void increaseScale(float factor){
+//	get the bitmap from the screen	
+	public Bitmap getImageOut(){
+
+		Log.d("BITMAP", "Get Image Out "+this.getWidth()+" "+this.getHeight());
+		Bitmap  bitmap = Bitmap.createBitmap(this.getWidth(), this.getHeight(), Bitmap.Config.ARGB_8888);
+		Canvas  c = new Canvas(bitmap);
 		
+		Log.d("BITMAP", "onDraw");
+
+		onDraw(c);
+		//just copying on draw
+		Log.d("BITMAP", "return bitmap");
+
+		//end copy
+		return bitmap;
 	}
-	
-	public void decreaseScale(float factor){
-		
-	}
+
 	
 
 	
