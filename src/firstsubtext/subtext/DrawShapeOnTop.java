@@ -41,13 +41,12 @@ class DrawShapeOnTop extends View {
 		image_scale = new Matrix();
 		image_scale.setScale(0.35f, 0.35f); // change this later
 		
+//		File f = new File(Globals.getPath() + File.separator +"IMG_"+ Integer.toString(shape.getId()) + ".jpg");
+//		bmap = Globals.decodeSampledBitmapFromResource(f,this.getWidth(), t);
+//		
 		 bmap = BitmapFactory.decodeFile(Globals.getPath() + File.separator +
 				"IMG_"+ Integer.toString(shape.getId()) + ".jpg");
 		
-	
-
-		
-
 	}
 
 	@Override

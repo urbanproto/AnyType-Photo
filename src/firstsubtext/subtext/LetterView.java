@@ -48,21 +48,31 @@ class LetterView extends View {
 			
 			float[] pos = li.getPos();
 			Bitmap b = li.getBitmap();
-			Matrix m = li.getM();
-			Path path = li.getPath();
+			RectF  bounds = li.getBounds();
 			
+			Matrix mn = new Matrix();
+			try{
+				Log.d("Matrix", "Rotations is "+li.getRotations());
+				//mn.setRotate(li.getRotations(), b.getWidth()/2, b.getHeight()/2);
+				mn.setScale(li.getScale(), li.getScale());
+			}catch(Exception e){
+				
+			}
 			canvas.save();
 			canvas.translate(pos[0], pos[1]);
-			canvas.drawBitmap(b, m, null);
+			canvas.rotate(li.getRotations());
+			canvas.drawBitmap(b, mn, null);
 			canvas.restore();
-			
+
 			//outline the selected shape
 			if(li.hasFocus()){
 				Paint p = new Paint();
 				p.setColor(Color.YELLOW);
 				p.setStyle(Style.STROKE);
-				canvas.drawPath(path, p);
+				//canvas.rotate(li.getRotations());
+				canvas.drawRect(bounds, p);
 			}
+
 			
 		}
 		
@@ -117,6 +127,23 @@ class LetterView extends View {
 		li.setPos(x, y);
 	}
 	
+
+	public void updateScale(float scale) {
+		if(cur == -1) return;
+		
+		LetterInstance li = letters.get(cur);
+		li.setScale(scale);
+		
+	}
+	
+	public void setRotations(float rots){
+		if(cur == -1) return;
+		
+		LetterInstance li = letters.get(cur);
+		li.setRotations(rots);
+		
+	}
+	
 	public void increaseScale(float factor){
 		
 	}
@@ -125,9 +152,7 @@ class LetterView extends View {
 		
 	}
 	
-	public void rotateBy(float factor){
-		
-	}
+
 	
 	
 

@@ -57,22 +57,30 @@ public class CaptureActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		
-		//if we've captured all the images, move to the canvas stage
-		//if(Globals.stage > 4){
-//			Log.d("Canvas", "Create Intent");
-//			boolean success = Globals.buildLetters();
-//			Log.d("Canvas", "SUCCESS? "+success);
-//
-//			if(success){
-//				
-//			Intent intent = new Intent(this, CanvasActivity.class);
-//			startActivity(intent);
-//			}
-//			Globals.resetStage();
+		Log.d("Canvas Call", "On Create Called");
 
-		//}
+		//looks at the current stage and builds any letters it can
+		Globals.buildLetters();
 		
+		Log.d("Canvas Call", "Returned From Build Letters");
+
+		//if we've captured all the images, move to the canvas stage
+		if(Globals.stage > 4){
+
+			Log.d("Canvas Call", "Create Intent");	
+			Intent intent = new Intent(this, CanvasActivity.class);
+			startActivity(intent);
+			Log.d("Canvas Call", "Reset Stage Pre" + Globals.stage);
+
+			
+			Globals.resetStage();
+			Log.d("Canvas Call", "Reset Stage Post" + Globals.stage);
+
+
+		}else{
+			Log.d("Canvas Call", "In Else");
+
+			
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.cameracapture);
 		
@@ -98,8 +106,7 @@ public class CaptureActivity extends Activity {
 		preview.addView(mPreview);
 		preview.addView(shapeView, new LayoutParams(LayoutParams.WRAP_CONTENT,
 				LayoutParams.WRAP_CONTENT));
-		
-
+		}
 	}
 
 	@Override

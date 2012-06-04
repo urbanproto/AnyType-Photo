@@ -65,7 +65,7 @@ public class ViewCaptureActivity extends Activity {
 				try {
 					FileOutputStream fos = new FileOutputStream(pictureFile);
 					Bitmap bmap = shapeView.getShapeImageOut();
-					bmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+					bmap.compress(Bitmap.CompressFormat.PNG, 60, fos);
 					fos.close();
 					Log.d("Capture Activity", "File Created");
 					

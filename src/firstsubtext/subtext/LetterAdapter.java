@@ -18,6 +18,8 @@ public class LetterAdapter extends BaseAdapter {
 
     public LetterAdapter(Context c) {
         mContext = c;
+		Log.d("Canvas Call", "Letter Adapter Created");
+
     }
 
     public int getCount() {
@@ -44,10 +46,13 @@ public class LetterAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        Bitmap b = BitmapFactory.decodeFile(Globals.getTestPath() + File.separator +
+		Log.d("Canvas Call", "Loading Bitmap "+Globals.getTestPath() + File.separator +
 				Globals.intToChar(position) + ".png");
-        imageView.setImageBitmap(b);
-     
+        
+		File f = new File(Globals.getTestPath() + File.separator +Globals.intToChar(position) + ".png");
+		imageView.setImageBitmap(Globals.decodeSampledBitmapFromResource(f,60, 60));
+		     
+
         return imageView;
     }
 

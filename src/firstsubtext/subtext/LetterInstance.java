@@ -8,6 +8,7 @@ import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.util.Log;
 
 /***
  * This class handles the letters that are drawn on the screen
@@ -34,6 +35,7 @@ public class LetterInstance {
 		this.hasFocus = true;
 		this.scale = 0.5f;
 		this.rotation = 0;
+		this.p = new Path();
 		
 		bitmap = BitmapFactory.decodeFile(Globals.getTestPath() + File.separator +Globals.intToChar(id)+".png");
 						
@@ -47,7 +49,7 @@ public class LetterInstance {
 	
 	//call this when position is updated, scale or rotation changes
 	private void updateVars(){
-		p = new Path();
+		Path p = new Path();
 		
 		p.lineTo(0, bitmap.getHeight());
 		p.lineTo(bitmap.getWidth(), bitmap.getHeight());
@@ -55,13 +57,17 @@ public class LetterInstance {
 		p.lineTo(0, 0);
 		
 		p.computeBounds(bounds, false);
-		
 		m = new Matrix();
-		m.setScale(scale, scale);
-		m.setRotate(rotation, bounds.centerX(), bounds.centerY());
 		
+		try{
+			m.setRotate(rotation, bounds.centerX(), bounds.centerY());
+			m.setScale(scale, scale);
+		}catch(Exception e){
+			Log.d("Matrix", e.getMessage());
+		}
+		
+		p.transform(m, p);
 		p.offset(pos[0], pos[1]);
-		p.transform(m);
 		p.computeBounds(bounds, false);
 	}
 	
@@ -87,12 +93,23 @@ public class LetterInstance {
 
 
 	public void setPos(float x, float y) {
-		this.pos[0] = x - bitmap.getWidth()/2;
-		this.pos[1] = y - bitmap.getHeight()/2;
+		this.pos[0] = x - (bitmap.getWidth()*scale)/2;
+		this.pos[1] = y - (bitmap.getHeight()*scale)/2;
 		
 		//make sure to update the path
 		updateVars();
 		
+	}
+	
+	public void setScale(float scale2) {
+		scale = scale2;
+		updateVars();
+	}
+		
+	
+	public void setRotations(float rots){
+		rotation = rots;
+		updateVars();
 	}
 
 
@@ -111,5 +128,21 @@ public class LetterInstance {
 	public Bitmap getBitmap() {
 		return bitmap;
 	}
+
+	public float getScale() {
+		return scale;
+	}
+
+	public RectF getBounds() {
+		return bounds;
+	}
+
+	public float getRotations() {
+		return rotation;
+	}
+
+
+	
+	
 
 }
