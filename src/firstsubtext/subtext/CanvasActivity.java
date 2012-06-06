@@ -24,6 +24,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
@@ -31,20 +33,26 @@ import android.hardware.Camera.Size;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.GridView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.EditorInfo;
 //each activity is a state. 
 //this is the photo capture activity. It takes a picture 
 
@@ -103,13 +111,40 @@ public class CanvasActivity extends Activity implements OnTouchListener {
 			}
 		});
 		
+		
+		final EditText et = (EditText) findViewById(R.id.font_name);
+		et.setOnKeyListener(new OnKeyListener() {
+		    public boolean onKey(View v, int keyCode, KeyEvent event) {
+		        // If the event is a key-down event on the "enter" button
+		    	EditText view = (EditText) v;
+		        if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+		            (keyCode == KeyEvent.KEYCODE_ENTER)) {
+					String s = view.getText().toString();
+					// File (or directory) to be moved
+					File file = new File(Globals.getPath());
 
+					// Destination directory
+					File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),s);
+
+					// Move file to new directory
+					boolean success = file.renameTo(new File(dir, file.getName()));
+					if (!success) {
+						Globals.changeDirectory(dir);
+						Log.d("Text", "Move Failed");
+					}
+		          return true;
+		        }
+		        return false;
+		    }
+		});
+		
 	}
 	
 	private void saveScreen(){
 		//save the picture
 
-		File pictureFile = Globals.getOutputMediaFile(Globals.MEDIA_TYPE_IMAGE, "MyCanvas_" + (savedNum++) + ".png");
+		File pictureFile = Globals.getOutputMediaFile(Globals.MEDIA_TYPE_IMAGE, "MyCanvas_" +(savedNum++)+ Globals.timeStamp + ".png");
+		
 		if (pictureFile == null) {
 			return;
 		}
@@ -153,9 +188,38 @@ public class CanvasActivity extends Activity implements OnTouchListener {
 
 		if (event.getActionIndex() > 0) {
 			two_finger = !two_finger;
-			Log.d("Touch", "Two Finger: " + two_finger);
+			
+			if(event.getActionIndex() > 2){
+				LinearLayout ll = (LinearLayout) findViewById(id.canvas_fullscreen);
+				Bitmap b = Bitmap.createBitmap(ll.getWidth(), ll.getHeight(), Bitmap.Config.ARGB_8888);
+				Canvas c = new Canvas(b);
+				ll.draw(c);
+				
+				File pictureFile = Globals.getOutputMediaFile(Globals.MEDIA_TYPE_IMAGE, "GRAB_"+ Globals.timeStamp+ "_"+ Integer.toString(Globals.grab_num++) + ".jpg");
+				if (pictureFile == null) {
+					return true;
+				}
 
-			if(event.getActionIndex() > 1){
+				try {
+					FileOutputStream fos = new FileOutputStream(pictureFile);
+					Bitmap out = Bitmap.createBitmap(b,0, 0, (int) ll.getWidth(), (int) ll.getHeight(), new Matrix(), false);
+
+					out.compress(Bitmap.CompressFormat.JPEG, 60, fos);
+					fos.close();
+					Log.d("Capture Activity", "File Created");
+					
+					
+
+				} catch (FileNotFoundException e) {
+					Log.d("", "File not found: " + e.getMessage());
+				} catch (IOException e) {
+					Log.d("", "Error accessing file: " + e.getMessage());
+				}
+				
+				return false;
+			}
+			
+			else if(event.getActionIndex() > 1){
 				lv.removeCurrentLetter();
 			}
 			

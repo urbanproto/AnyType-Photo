@@ -21,6 +21,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Environment;
 import android.util.Log;
+import android.view.View;
 
 public class Globals {
 	static String timeStamp;
@@ -32,6 +33,7 @@ public class Globals {
 	static int stage;
 	static float shapeStretch = 2.0f;
 	static int letter_size = 600;
+	static int grab_num = 0;
 
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	public static final int MEDIA_TYPE_VIDEO = 2;
@@ -179,6 +181,21 @@ public class Globals {
 	public static String getPath() {
 		return mediaStorageDir.getPath();
 	}
+	
+	public static String getPicturesPath() {
+		
+		File picturesPath = new File(
+				Environment
+						.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),"Camera");
+		
+//		if (!mediaStorageDir.exists()) {
+//			if (!mediaStorageDir.mkdirs()) {
+//				Log.d("MyCameraApp", "failed to create directory");
+//			}
+//		}
+		
+		return picturesPath.getPath();
+	}
 
 	public static String getTestPath() {
 		return getPath();
@@ -203,6 +220,15 @@ public class Globals {
 		// Create a media file name
 		File mediaFile;
 		mediaFile = new File(getPath() + File.separator + s);
+
+		return mediaFile;
+	}
+	
+	public static File getOutputPicturesFile(int type, String s) {
+
+		// Create a media file name
+		File mediaFile;
+		mediaFile = new File(getPicturesPath() + File.separator + s);
 
 		return mediaFile;
 	}
@@ -330,33 +356,12 @@ public class Globals {
 	    
 	    return null;
 	}
+
+	public static void changeDirectory(File dir) {
+		mediaStorageDir = dir;
+	}
+
 	
-	
-//	private static Bitmap decodeFile(File f){
-//	    Bitmap b = null;
-//	    try {
-//	        //Decode image size
-//	        BitmapFactory.Options o = new BitmapFactory.Options();
-//	        o.inJustDecodeBounds = true;
-//
-//	        FileInputStream fis = new FileInputStream(f);
-//	        BitmapFactory.decodeStream(fis, null, o);
-//	        fis.close();
-//
-//	        int scale = 1;
-//	        if (o.outHeight > IMAGE_MAX_SIZE || o.outWidth > IMAGE_MAX_SIZE) {
-//	            scale = (int)Math.pow(2, (int) Math.round(Math.log(IMAGE_MAX_SIZE / (double) Math.max(o.outHeight, o.outWidth)) / Math.log(0.5)));
-//	        }
-//
-//	        //Decode with inSampleSize
-//	        BitmapFactory.Options o2 = new BitmapFactory.Options();
-//	        o2.inSampleSize = scale;
-//	        fis = new FileInputStream(f);
-//	        b = BitmapFactory.decodeStream(fis, null, o2);
-//	        fis.close();
-//	    } catch (IOException e) {
-//	    }
-//	    return b;
-//	}
+
 
 }

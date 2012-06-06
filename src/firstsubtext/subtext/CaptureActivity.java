@@ -23,6 +23,9 @@ import firstsubtext.subtext.R.id;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
@@ -30,17 +33,20 @@ import android.hardware.Camera.Size;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.view.ViewGroup.LayoutParams;
 
 //each activity is a state. 
 //this is the photo capture activity. It takes a picture 
-public class CaptureActivity extends Activity {
+public class CaptureActivity extends Activity implements OnTouchListener{
 
 	protected static final String TAG = null;
 	public static final int MEDIA_TYPE_IMAGE = 1;
@@ -101,6 +107,7 @@ public class CaptureActivity extends Activity {
 		// Create our Preview view and set it as the content of our activity.
 		mPreview = new CameraPreview(this, mCamera);
 		shapeView = new DrawShapeOnTop(this, Globals.getStageShape(), false);
+		shapeView.setOnTouchListener(this);
 
 		preview = (FrameLayout) findViewById(id.camera_preview);
 		preview.addView(mPreview);
@@ -217,5 +224,40 @@ public class CaptureActivity extends Activity {
 		}
 
 	};
+
+
+
+	@Override
+	public boolean onTouch(View arg0, MotionEvent arg1) {
+		LinearLayout ll = (LinearLayout) findViewById(id.camera_fullscreen);
+		Bitmap b = Bitmap.createBitmap(ll.getWidth(), ll.getHeight(), Bitmap.Config.ARGB_8888);
+		Canvas c = new Canvas(b);
+		ll.draw(c);
+		
+		File pictureFile = Globals.getOutputMediaFile(Globals.MEDIA_TYPE_IMAGE, "GRAB_"+ Globals.timeStamp+ "_"+ Integer.toString(Globals.grab_num++) + ".jpg");
+		if (pictureFile == null) {
+			return true;
+		}
+
+		try {
+			FileOutputStream fos = new FileOutputStream(pictureFile);
+			Bitmap out = Bitmap.createBitmap(b,0, 0, (int) ll.getWidth(), (int) ll.getHeight(), new Matrix(), false);
+
+			out.compress(Bitmap.CompressFormat.JPEG, 60, fos);
+			fos.close();
+			Log.d("Capture Activity", "File Created");
+			
+
+		} catch (FileNotFoundException e) {
+			Log.d(TAG, "File not found: " + e.getMessage());
+		} catch (IOException e) {
+			Log.d(TAG, "Error accessing file: " + e.getMessage());
+		}
+		
+		return false;
+	}
+	
+	
+	
 
 }
