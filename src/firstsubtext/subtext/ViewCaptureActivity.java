@@ -100,6 +100,40 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 				finish();
 			}
 		});
+		
+		
+		// add accept button listener
+		Button captureButton = (Button) findViewById(id.button_capture);
+		captureButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				LinearLayout ll = (LinearLayout) findViewById(id.viewcapture_fullscreen);
+				Bitmap b = Bitmap.createBitmap(ll.getWidth(), ll.getHeight(), Bitmap.Config.ARGB_8888);
+				Canvas c = new Canvas(b);
+				ll.draw(c);
+				
+				File pictureFile = Globals.getOutputMediaFile(Globals.MEDIA_TYPE_IMAGE, "GRAB_"+ Globals.timeStamp+ "_"+ Integer.toString(Globals.grab_num++) + ".jpg");
+				if (pictureFile == null) {
+				}
+
+				try {
+					FileOutputStream fos = new FileOutputStream(pictureFile);
+					Bitmap out = Bitmap.createBitmap(b,0, 0, (int) ll.getWidth(), (int) ll.getHeight(), new Matrix(), false);
+
+					out.compress(Bitmap.CompressFormat.JPEG, 60, fos);
+					fos.close();
+					Log.d("Capture Activity", "File Created");
+					
+					
+
+				} catch (FileNotFoundException e) {
+					Log.d(TAG, "File not found: " + e.getMessage());
+				} catch (IOException e) {
+					Log.d(TAG, "Error accessing file: " + e.getMessage());
+				}
+				
+			}
+		});
 
 		// Create our Preview view and set it as the content of our activity.
 		shapeView = new DrawShapeOnTop(this, Globals.getStageShape(), true);
@@ -121,35 +155,7 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 		int selected;
 
 		DrawShapeOnTop dv = (DrawShapeOnTop) v;
-		if(event.getActionIndex() > 0){
-				LinearLayout ll = (LinearLayout) findViewById(id.viewcapture_fullscreen);
-				Bitmap b = Bitmap.createBitmap(ll.getWidth(), ll.getHeight(), Bitmap.Config.ARGB_8888);
-				Canvas c = new Canvas(b);
-				ll.draw(c);
-				
-				File pictureFile = Globals.getOutputMediaFile(Globals.MEDIA_TYPE_IMAGE, "GRAB_"+ Globals.timeStamp+ "_"+ Integer.toString(Globals.grab_num++) + ".jpg");
-				if (pictureFile == null) {
-					return true;
-				}
-
-				try {
-					FileOutputStream fos = new FileOutputStream(pictureFile);
-					Bitmap out = Bitmap.createBitmap(b,0, 0, (int) ll.getWidth(), (int) ll.getHeight(), new Matrix(), false);
-
-					out.compress(Bitmap.CompressFormat.JPEG, 60, fos);
-					fos.close();
-					Log.d("Capture Activity", "File Created");
-					
-					
-
-				} catch (FileNotFoundException e) {
-					Log.d(TAG, "File not found: " + e.getMessage());
-				} catch (IOException e) {
-					Log.d(TAG, "Error accessing file: " + e.getMessage());
-				}
-				
-				return false;
-		}else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			dv.startPath(event.getX(), event.getY());
 
 			// finger up - nothing selected

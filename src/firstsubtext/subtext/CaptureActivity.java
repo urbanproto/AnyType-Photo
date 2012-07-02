@@ -230,6 +230,9 @@ public class CaptureActivity extends Activity implements OnTouchListener{
 	@Override
 	public boolean onTouch(View arg0, MotionEvent arg1) {
 		LinearLayout ll = (LinearLayout) findViewById(id.camera_fullscreen);
+		
+		//what happens if I just get the shape on top part too?
+		
 		Bitmap b = Bitmap.createBitmap(ll.getWidth(), ll.getHeight(), Bitmap.Config.ARGB_8888);
 		Canvas c = new Canvas(b);
 		ll.draw(c);
