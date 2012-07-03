@@ -22,5 +22,14 @@
           android:layout_marginTop="300px"
           android:layout_marginLeft="1180px"          
           android:text="Capture" />
+
+      <ProgressBar
+          android:id="@+id/progress_bar"
+          style="?android:attr/progressBarStyleHorizontal"          
+          android:layout_width="1000px"
+          android:layout_marginTop="660px" 
+          android:layout_height="20px" 
+          android:layout_marginLeft="100px"/>
+
 	</FrameLayout>  
 </FrameLayout>

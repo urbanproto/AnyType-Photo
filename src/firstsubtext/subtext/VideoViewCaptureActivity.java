@@ -36,7 +36,7 @@ import android.view.ViewGroup.LayoutParams;
 
 //each activity is a state. 
 //this is the photo capture activity. It takes a picture 
-public class ViewCaptureActivity extends Activity implements OnTouchListener{
+public class VideoViewCaptureActivity extends Activity implements OnTouchListener{
 	
 
 	protected static final String TAG = "ViewCaptureActivity";

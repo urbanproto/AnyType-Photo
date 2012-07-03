@@ -46,7 +46,7 @@ import android.view.ViewGroup.LayoutParams;
 
 //each activity is a state. 
 //this is the photo capture activity. It takes a picture 
-public class CaptureActivity extends Activity implements OnTouchListener{
+public class CaptureActivity extends Activity{
 
 	protected static final String TAG = null;
 	public static final int MEDIA_TYPE_IMAGE = 1;
@@ -68,19 +68,12 @@ public class CaptureActivity extends Activity implements OnTouchListener{
 		//looks at the current stage and builds any letters it can
 		Globals.buildLetters();
 		
-		Log.d("Canvas Call", "Returned From Build Letters");
-
 		//if we've captured all the images, move to the canvas stage
 		if(Globals.stage > 4){
 
-			Log.d("Canvas Call", "Create Intent");	
 			Intent intent = new Intent(this, CanvasActivity.class);
-			startActivity(intent);
-			Log.d("Canvas Call", "Reset Stage Pre" + Globals.stage);
-
-			
+			startActivity(intent);			
 			Globals.resetStage();
-			Log.d("Canvas Call", "Reset Stage Post" + Globals.stage);
 
 
 		}else{
@@ -90,7 +83,6 @@ public class CaptureActivity extends Activity implements OnTouchListener{
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.cameracapture);
 		
-
 		// Add a listener to the Capture button
 		Button captureButton = (Button) findViewById(id.button_capture);
 		captureButton.setOnClickListener(new View.OnClickListener() {
@@ -107,7 +99,6 @@ public class CaptureActivity extends Activity implements OnTouchListener{
 		// Create our Preview view and set it as the content of our activity.
 		mPreview = new CameraPreview(this, mCamera);
 		shapeView = new DrawShapeOnTop(this, Globals.getStageShape(), false);
-		shapeView.setOnTouchListener(this);
 
 		preview = (FrameLayout) findViewById(id.camera_preview);
 		preview.addView(mPreview);
@@ -142,22 +133,6 @@ public class CaptureActivity extends Activity implements OnTouchListener{
 		try {
 			c = Camera.open(); // attempt to get a Camera instance
 			Parameters parameters = c.getParameters();
-			
-			
-			/*List<String> focusModes = parameters.getSupportedFocusModes();
-			if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO))
-			{
-			    parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-			}
-			
-			parameters.setAntibanding(Camera.Parameters.ANTIBANDING_AUTO);
-			parameters.setAutoExposureLock(true);
-			
-			Log.d("Camera Settings: Antibanding: ", parameters.getAntibanding());
-			Log.d("Camera Settings: Focus mode: ", parameters.getFocusMode());
-			Log.d("Camera Settings: White Balance: ", parameters.getWhiteBalance());
-			Log.d("Camera Settings: Scene Mode: ", parameters.getSceneMode());
-			*/
 			parameters.setPictureSize(shapeView.getWidth(), shapeView.getHeight());
 	        c.setParameters(parameters);
 			
@@ -224,42 +199,6 @@ public class CaptureActivity extends Activity implements OnTouchListener{
 		}
 
 	};
-
-
-
-	@Override
-	public boolean onTouch(View arg0, MotionEvent arg1) {
-		LinearLayout ll = (LinearLayout) findViewById(id.camera_fullscreen);
-		
-		//what happens if I just get the shape on top part too?
-		
-		Bitmap b = Bitmap.createBitmap(ll.getWidth(), ll.getHeight(), Bitmap.Config.ARGB_8888);
-		Canvas c = new Canvas(b);
-		ll.draw(c);
-		
-		File pictureFile = Globals.getOutputMediaFile(Globals.MEDIA_TYPE_IMAGE, "GRAB_"+ Globals.timeStamp+ "_"+ Integer.toString(Globals.grab_num++) + ".jpg");
-		if (pictureFile == null) {
-			return true;
-		}
-
-		try {
-			FileOutputStream fos = new FileOutputStream(pictureFile);
-			Bitmap out = Bitmap.createBitmap(b,0, 0, (int) ll.getWidth(), (int) ll.getHeight(), new Matrix(), false);
-
-			out.compress(Bitmap.CompressFormat.JPEG, 60, fos);
-			fos.close();
-			Log.d("Capture Activity", "File Created");
-			
-
-		} catch (FileNotFoundException e) {
-			Log.d(TAG, "File not found: " + e.getMessage());
-		} catch (IOException e) {
-			Log.d(TAG, "Error accessing file: " + e.getMessage());
-		}
-		
-		return false;
-	}
-	
 	
 	
 

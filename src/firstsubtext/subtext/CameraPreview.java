@@ -1,8 +1,13 @@
 package firstsubtext.subtext;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+
 import android.content.Context;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
+import android.hardware.Camera.Size;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -59,6 +64,22 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
         // set preview size and make any resize, rotate or
         // reformatting changes here
+		Parameters parameters = mCamera.getParameters();
+    	parameters.setPreviewSize(1280, 720);
+    	parameters.setPictureSize(1280, 720);
+    	
+//    	List<Size> sizes = parameters.getSupportedPictureSizes();
+//		Iterator it = sizes.iterator();
+//		while(it.hasNext()){
+//			Size s = (Size)it.next();
+//			Log.d("Preview Sizes", s.width +" x " + s.height);
+//		}
+   
+		mCamera.setParameters(parameters);
+		
+		
+        
+        
 
         // start preview with new settings
         try {
