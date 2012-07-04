@@ -67,7 +67,7 @@ public class LetterVideoPlayerActivity extends Activity {
 		mGrid.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				launchVideo(position);
+				launchVideo(v.getId());
 			}
 		});
 		
@@ -94,6 +94,7 @@ public class LetterVideoPlayerActivity extends Activity {
 	
 	//launch the video player when clicked
 	public void launchVideo(int stage){
+		
 		Globals.playback_mode = true;
 		Globals.force_stage = stage;
 		

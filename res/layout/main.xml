@@ -1,14 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="horizontal" android:layout_gravity="center">
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="1111dp"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:orientation="horizontal" >
+    
+    <Button
+        android:id="@+id/button_new"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome To Subtext"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:text="Create New Font"
+        android:layout_gravity="center_vertical|center_horizontal" />
 
+    <Button
+        android:id="@+id/button_new_video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create New Font with Video"
+        android:layout_gravity="center_vertical|center_horizontal" />
+
+
+
+    <Button
+        android:id="@+id/button_load"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:text="Load Existing Font" />
 </LinearLayout>
+</FrameLayout>

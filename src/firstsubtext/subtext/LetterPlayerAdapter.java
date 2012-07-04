@@ -20,10 +20,12 @@ public class LetterPlayerAdapter extends BaseAdapter {
     private Context mContext;
     // references to our images
     private ArrayList bitmaps;
+    private ArrayList ids;
 
     public LetterPlayerAdapter(Context c) {
         mContext = c;   
         bitmaps = new ArrayList();
+        ids = new ArrayList();
         
          boolean[] included = {false, false, false, false, false};
         
@@ -31,9 +33,10 @@ public class LetterPlayerAdapter extends BaseAdapter {
         Letter l = Globals.getLetter(Globals.force_letter);
         int[] shape_ids = l.getShapeIds();
         for(int i = 0; i < shape_ids.length; i++){
-        	if(!included[shape_ids[i]]){
+        	if(Globals.stageHasVideo(shape_ids[i]) && !included[shape_ids[i]]){
         	File f = new File(Globals.getTestPath() + File.separator + "IMG_"+shape_ids[i] + "_CROP.png");
         	bitmaps.add(f);
+        	ids.add(shape_ids[i]);
         	included[shape_ids[i]] = true;
         	}
         }
@@ -59,6 +62,7 @@ public class LetterPlayerAdapter extends BaseAdapter {
             imageView.setLayoutParams(new GridView.LayoutParams(Globals.letter_size/2, Globals.letter_size/2));
             imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             imageView.setPadding(8, 8, 8, 8);
+            imageView.setId((Integer) ids.get(position));
 
         } else {
             imageView = (ImageView) convertView;

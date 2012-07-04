@@ -150,10 +150,10 @@ public class CaptureActivity extends Activity{
 		// Create a media file name
 		File mediaFile;
 		if (type == MEDIA_TYPE_IMAGE) {
-			mediaFile = new File(Globals.getPath() + File.separator
+			mediaFile = new File(Globals.getTestPath() + File.separator
 					+ "IMG_" + Integer.toString(Globals.stage) + ".jpg");
 		} else if (type == MEDIA_TYPE_VIDEO) {
-			mediaFile = new File(Globals.getPath() + File.separator
+			mediaFile = new File(Globals.getTestPath() + File.separator
 					+ "VID_" + Integer.toString(Globals.stage) + ".mp4");
 		} else {
 			return null;

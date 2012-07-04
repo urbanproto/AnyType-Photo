@@ -42,6 +42,7 @@ public class LetterAdapter extends BaseAdapter {
             imageView.setLayoutParams(new GridView.LayoutParams(60, 60));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(8, 8, 8, 8);
+            imageView.setId(position);
         } else {
             imageView = (ImageView) convertView;
         }

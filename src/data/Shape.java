@@ -124,7 +124,7 @@ public class Shape extends Activity{
 		
 
 
-		image = BitmapFactory.decodeFile(Globals.getPath() + File.separator +
+		image = BitmapFactory.decodeFile(Globals.getTestPath() + File.separator +
 				"IMG_"+ Integer.toString(id) + ".jpg");
 
 		Log.d("Create Shape Image", "Image Loaded");

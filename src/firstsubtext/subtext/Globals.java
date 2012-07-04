@@ -34,6 +34,7 @@ public class Globals {
 	static float shapeStretch = 2.0f;
 	static int letter_size = 600;
 	static int grab_num = 0;
+	static String base_dir_name;
 	
 	static boolean playback_mode = false;
 	static int force_stage = 0;
@@ -45,6 +46,9 @@ public class Globals {
 
 	private static float[] lastfinger1 = new float[2];
 	private static float[] lastfinger2 = new float[2];
+	
+	static LetterView saved_lv = null;
+	
 
 	public Globals(String time) {
 		existing_letters = new boolean[26];
@@ -57,6 +61,10 @@ public class Globals {
 				Environment
 						.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
 				"SI_" + timeStamp);
+		
+		//base_dir_name = "SI_" + timeStamp;
+		base_dir_name = "testdir";
+	
 
 		if (!mediaStorageDir.exists()) {
 			if (!mediaStorageDir.mkdirs()) {
@@ -84,6 +92,35 @@ public class Globals {
 
 	}
 	
+	public static boolean renameDirectory(String s){
+		File file = new File(getTestPath());
+		File file2 = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),s);
+		boolean success = file.renameTo(file2);
+		
+		if(success) base_dir_name = s;
+		
+		return success;
+	}
+	
+	public static boolean hasAnyVideos(){
+		for(int i = 0; i < 5; i++){
+			if(stageHasVideo(i)) return true;
+		}
+		return false;
+	}
+
+	public static boolean stageHasVideo(int stageid) {
+		
+		File vidFile = new File(getStageVideoPath(stageid));
+		return vidFile.exists();
+
+	}
+	
+
+	public static String getStageVideoPath(int stageid) {
+		return (getTestPath() + File.separator + "VID_" + Integer.toString(stageid) + ".mp4");
+	}
+
 	
 	public static boolean stageHasVideo() {
 		
@@ -94,7 +131,7 @@ public class Globals {
 	
 	public static String getStageVideoPath() {
 		if(playback_mode) return (getTestPath() + File.separator + "VID_" + Integer.toString(force_stage) + ".mp4");
-		else return (getPath() + File.separator + "VID_" + Integer.toString(stage) + ".mp4");
+		else return (getTestPath() + File.separator + "VID_" + Integer.toString(stage) + ".mp4");
 	}
 
 	public static boolean buildLetters() {
@@ -196,9 +233,9 @@ public class Globals {
 		return timeStamp;
 	}
 
-	public static String getPath() {
-		return mediaStorageDir.getPath();
-	}
+//	public static String getPath() {
+//		return mediaStorageDir.getPath();
+//	}
 	
 	public static String getPicturesPath() {
 		
@@ -216,13 +253,13 @@ public class Globals {
 	}
 
 	public static String getTestPath() {
-		return getPath();
-		/*File testDir = new File(
+		//return getPath();
+		File testDir = new File(
 				Environment
 						.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
-				"testdir");
+				base_dir_name);
 		return testDir.getPath();
-		*/
+		
 		
 	}
 
@@ -241,7 +278,7 @@ public class Globals {
 
 		// Create a media file name
 		File mediaFile;
-		mediaFile = new File(getPath() + File.separator + s);
+		mediaFile = new File(getTestPath() + File.separator + s);
 
 		return mediaFile;
 	}

@@ -38,6 +38,22 @@ class LetterView extends View {
 		letters = new HashMap();
 
 	}
+	
+	public void loadState(LetterView lv){
+		this.letters = lv.getLetters();
+		this.cur = lv.getCur();
+		this.uid = lv.getUid();
+	}
+	
+	
+	public HashMap<Integer, LetterInstance> getLetters(){
+		return letters;
+	}
+	
+	
+	public int  getUid(){
+		return uid;
+	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
@@ -128,6 +144,7 @@ class LetterView extends View {
 	public void addLetter(int id){
 		letters.put((uid), new LetterInstance(id));
 		cur = uid++;
+		updatePosition((1280/26)*id, 60);
 	}
 	
 	///this is only to be used in the Letter Video View Class

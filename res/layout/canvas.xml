@@ -9,7 +9,7 @@
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/letter_grid"            
             android:layout_width="fill_parent" 
-		    android:layout_height="100dp"
+		    android:layout_height="60dp"
 		    android:columnWidth="20dp"
 		    android:numColumns="26"
 		    android:verticalSpacing="6dp"
@@ -17,6 +17,7 @@
 		    android:horizontalSpacing="6dp"
 		    android:stretchMode="columnWidth"
 		    android:gravity="center"
+		    android:longClickable="true"
           />
         
         
@@ -36,13 +37,23 @@
             android:gravity="right|center_vertical"
             android:orientation="horizontal" >
 
-            <EditText
+            <Switch
+                android:id="@+id/switch_delete_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Touch To Play Videos" />
+
+         <!--    <EditText
                 android:id="@+id/font_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.11"
                 android:ems="10"
-                android:text="enter font name" />
+                android:text="enter font name" /> -->
+
+            <Space
+                android:layout_width="700dp"
+                android:layout_height="match_parent" />
 
             <Button
                 android:id="@+id/button_reset"
@@ -58,11 +69,12 @@
                 android:layout_height="wrap_content"
                 android:text="Save Canvas" />
 
-            <Switch
-                android:id="@+id/switch_delete_mode"
+            <Button
+                android:id="@+id/button_save_font"
+                style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Delete Mode" />
+                android:text="Save Font" />
 
         </LinearLayout>
 

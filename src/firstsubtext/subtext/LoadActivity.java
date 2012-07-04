@@ -251,8 +251,12 @@ public class LoadActivity extends Activity {
 		setContentView(R.layout.main);
 		Log.d("Load Activity", "Loaded");
 		
+		Globals.saved_lv = null;
+		Globals.playback_mode = false;
+
 		
-		Intent intent = new Intent(this, VideoCaptureActivity.class);
+		
+		Intent intent = new Intent(this, CanvasActivity.class);
 		startActivity(intent);
 
 

@@ -51,7 +51,7 @@ class DrawShapeOnTop extends View {
 //		File f = new File(Globals.getPath() + File.separator +"IMG_"+ Integer.toString(shape.getId()) + ".jpg");
 //		bmap = Globals.decodeSampledBitmapFromResource(f,this.getWidth(), t);
 //		
-		 bmap = BitmapFactory.decodeFile(Globals.getPath() + File.separator +
+		 bmap = BitmapFactory.decodeFile(Globals.getTestPath() + File.separator +
 				"IMG_"+ Integer.toString(shape.getId()) + ".jpg");
 		
 		 path = new Path();
