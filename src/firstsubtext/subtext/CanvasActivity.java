@@ -49,6 +49,7 @@ import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.GridView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.ViewGroup.LayoutParams;
@@ -63,6 +64,7 @@ public class CanvasActivity extends Activity implements OnTouchListener {
 	private LetterView letter_view;
 	private boolean two_finger = false;
 	private int savedNum = 0;
+	private boolean delete_mode = false;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -111,6 +113,15 @@ public class CanvasActivity extends Activity implements OnTouchListener {
 			}
 		});
 		
+		//set a mode for deleteing
+		Switch deleteMode = (Switch) findViewById(id.switch_delete_mode);
+		deleteMode.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				updateDeleteMode();
+			}
+		});
+		
 		
 		final EditText et = (EditText) findViewById(R.id.font_name);
 		et.setOnKeyListener(new OnKeyListener() {
@@ -138,6 +149,19 @@ public class CanvasActivity extends Activity implements OnTouchListener {
 		    }
 		});
 		
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+	}
+
+	
+	
+	private void updateDeleteMode(){
+		delete_mode = !delete_mode;
+		Log.d("Delete Mode", "New Value"+delete_mode);
+
 	}
 	
 	private void saveScreen(){
@@ -189,41 +213,19 @@ public class CanvasActivity extends Activity implements OnTouchListener {
 		if (event.getActionIndex() > 0) {
 			two_finger = !two_finger;
 			
-			if(event.getActionIndex() > 2){
-				LinearLayout ll = (LinearLayout) findViewById(id.canvas_fullscreen);
-				Bitmap b = Bitmap.createBitmap(ll.getWidth(), ll.getHeight(), Bitmap.Config.ARGB_8888);
-				Canvas c = new Canvas(b);
-				ll.draw(c);
-				
-				File pictureFile = Globals.getOutputMediaFile(Globals.MEDIA_TYPE_IMAGE, "GRAB_"+ Globals.timeStamp+ "_"+ Integer.toString(Globals.grab_num++) + ".jpg");
-				if (pictureFile == null) {
-					return true;
+			if(event.getActionIndex() > 1){
+				//lv.removeCurrentLetter();
+				if(lv.getCur() != -1){
+				Log.d("Delete", "Setting Force Letter to "+lv.getCur());
+				Globals.force_letter = lv.getCurLetterId();
+				Intent intent = new Intent(this, LetterVideoPlayerActivity.class);
+				startActivity(intent);
 				}
-
-				try {
-					FileOutputStream fos = new FileOutputStream(pictureFile);
-					Bitmap out = Bitmap.createBitmap(b,0, 0, (int) ll.getWidth(), (int) ll.getHeight(), new Matrix(), false);
-
-					out.compress(Bitmap.CompressFormat.JPEG, 60, fos);
-					fos.close();
-					Log.d("Capture Activity", "File Created");
-					
-					
-
-				} catch (FileNotFoundException e) {
-					Log.d("", "File not found: " + e.getMessage());
-				} catch (IOException e) {
-					Log.d("", "Error accessing file: " + e.getMessage());
-				}
-				
-				return false;
-			}
-			
-			else if(event.getActionIndex() > 1){
-				lv.removeCurrentLetter();
 			}
 			
 		} else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			
+			
 			selected = lv.locate((int) event.getX(), (int) event.getY());
 
 			if (selected != lv.getCur() && lv.getCur() != -1)
@@ -231,6 +233,9 @@ public class CanvasActivity extends Activity implements OnTouchListener {
 			if (selected == -1)
 				return true;
 			lv.select(selected);
+			
+			if(delete_mode) lv.removeCurrentLetter();
+
 
 			// finger up - nothing selected
 		} else if (event.getAction() == MotionEvent.ACTION_UP) {			

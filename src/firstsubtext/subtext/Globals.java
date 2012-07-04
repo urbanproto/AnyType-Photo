@@ -34,6 +34,11 @@ public class Globals {
 	static float shapeStretch = 2.0f;
 	static int letter_size = 600;
 	static int grab_num = 0;
+	
+	static boolean playback_mode = false;
+	static int force_stage = 0;
+	static int force_letter = 0;
+	
 
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	public static final int MEDIA_TYPE_VIDEO = 2;
@@ -77,6 +82,19 @@ public class Globals {
 
 		stage = 0;
 
+	}
+	
+	
+	public static boolean stageHasVideo() {
+		
+		File vidFile = new File(getStageVideoPath());
+		return vidFile.exists();
+
+	}
+	
+	public static String getStageVideoPath() {
+		if(playback_mode) return (getTestPath() + File.separator + "VID_" + Integer.toString(force_stage) + ".mp4");
+		else return (getPath() + File.separator + "VID_" + Integer.toString(stage) + ".mp4");
 	}
 
 	public static boolean buildLetters() {
@@ -199,13 +217,17 @@ public class Globals {
 
 	public static String getTestPath() {
 		return getPath();
-//		File testDir = new File(
-//				Environment
-//						.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
-//				"test");
-//		return testDir.getPath();
+		/*File testDir = new File(
+				Environment
+						.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
+				"testdir");
+		return testDir.getPath();
+		*/
+		
 	}
 
+	
+	
 	public static Shape getShape(int id) {
 		return shapes[id];
 	}

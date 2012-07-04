@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id = "@+id/viewcapture_fullscreen"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center_vertical">
+
+  <FrameLayout
+      android:id="@+id/camera_preview"
+      android:layout_width="1280px"
+      android:layout_height="720px" >
+  </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" android:layout_gravity="right">
+
+	  	<LinearLayout
+	  	    android:layout_width="match_parent"
+	  	    android:layout_height="match_parent"
+	  	    android:layout_marginTop="300px"
+	  	    android:orientation="vertical" >
+
+	  		<LinearLayout
+	  		    android:layout_width="match_parent"
+	  		    android:layout_height="wrap_content" >
+
+	  		    <Button
+	  		        android:id="@+id/button_playback"
+	  		        android:layout_width="match_parent"
+	  		        android:layout_height="wrap_content"
+	  		        android:text="Play Video" />
+	  		</LinearLayout>
+
+	  	    <LinearLayout
+	  	        android:layout_width="wrap_content"
+	  	        android:layout_height="wrap_content"
+	  	        android:orientation="horizontal" >
+
+	  	        <Button
+	  	            android:id="@+id/button_accept"
+	  	            android:layout_width="wrap_content"
+	  	            android:layout_height="wrap_content"
+	  	            android:text="Yes" />
+
+	  	        <Button
+	  	            android:id="@+id/button_reject"
+	  	            android:layout_width="wrap_content"
+	  	            android:layout_height="wrap_content"
+	  	            android:text="No" />
+	  	    </LinearLayout>
+
+	  	</LinearLayout>
+
+  		</FrameLayout>
+  
+</FrameLayout>

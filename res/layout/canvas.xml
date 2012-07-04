@@ -57,6 +57,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Save Canvas" />
+
+            <Switch
+                android:id="@+id/switch_delete_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete Mode" />
+
         </LinearLayout>
 
 </LinearLayout>

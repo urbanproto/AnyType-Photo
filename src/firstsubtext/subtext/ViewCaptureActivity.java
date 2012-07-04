@@ -48,10 +48,28 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.viewcapture);
+		setContentView(R.layout.videoviewcapture);
 
 		Log.d("View Activity", "View Activity Loaded");
-
+		
+		Button playVideo = (Button) findViewById(id.button_playback);
+		//first - see if there is a video attached to this stage
+		if(Globals.stageHasVideo()){
+			playVideo.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				//launch the video playback intent
+				openVideoPlayer();
+			}
+		});
+		}else{
+			playVideo.setVisibility(View.INVISIBLE);
+		}
+		
+		
+		
+	
+		
 		
 		// add accept button listener
 		Button acceptButton = (Button) findViewById(id.button_accept);
@@ -85,7 +103,6 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 				
 				//end save the picture
 				Globals.nextStage();
-				
 				finish();
 			}
 		});
@@ -111,6 +128,11 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 
 	}
 	
+	
+	public void openVideoPlayer(){
+		Intent intent = new Intent(this, VideoPlayerActivity.class);
+		startActivity(intent);
+	}
 	
 	// Implement the OnTouchListener callback
 	public boolean onTouch(View v, MotionEvent event) {

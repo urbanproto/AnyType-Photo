@@ -84,6 +84,11 @@ class LetterView extends View {
 		return cur;
 	}
 	
+	public int getCurLetterId(){
+		LetterInstance li = letters.get(cur);
+		return li.getId();
+	}
+	
 	
 	public int locate(int x, int y){
 		Iterator it = letters.entrySet().iterator();
@@ -123,6 +128,11 @@ class LetterView extends View {
 	public void addLetter(int id){
 		letters.put((uid), new LetterInstance(id));
 		cur = uid++;
+	}
+	
+	///this is only to be used in the Letter Video View Class
+	public void addSingleLetter(int id){
+		letters.put((uid), new LetterInstance(id));
 	}
 	
 	public void updatePosition(float x, float y){

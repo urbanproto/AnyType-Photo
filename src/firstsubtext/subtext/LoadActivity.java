@@ -250,6 +250,8 @@ public class LoadActivity extends Activity {
 
 		setContentView(R.layout.main);
 		Log.d("Load Activity", "Loaded");
+		
+		
 		Intent intent = new Intent(this, VideoCaptureActivity.class);
 		startActivity(intent);
 

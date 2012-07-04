@@ -42,9 +42,32 @@ public class VideoCaptureActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.videocameracapture);
+		Log.d("Video Canvas Call", "On Create Called");
+
+		//looks at the current stage and builds any letters it can
+		Globals.buildLetters();
 		
+		//if we've captured all the images, move to the canvas stage
+		if(Globals.stage > 4){
+
+			Intent intent = new Intent(this, CanvasActivity.class);
+			startActivity(intent);			
+			Globals.resetStage();
+
+
+		}else{
+			Log.d("Canvas Call", "In Else");
+
+			
+			requestWindowFeature(Window.FEATURE_NO_TITLE);
+			setContentView(R.layout.videocameracapture);
+			
+		
+		
+		
+			
+				
+			
         mProgress = (ProgressBar) findViewById(R.id.progress_bar);
         mProgress.setMax(15000);
 
@@ -118,8 +141,7 @@ public class VideoCaptureActivity extends Activity {
 				LayoutParams.WRAP_CONTENT));
 				
 		
-		
-		
+		}
 	
 	}
 	
@@ -209,32 +231,9 @@ public class VideoCaptureActivity extends Activity {
 		return c; // returns null if camera is unavailable
 	}
 	
-	/*
-	
-	private static Uri getOutputMediaFileUri(int type){
-	      return Uri.fromFile(getOutputMediaFile(type));
-	}
-*/
 
-	private static File getOutputMediaFile(int type){
-	    // To be safe, you should check that the SDCard is mounted
-	    // using Environment.getExternalStorageState() before doing this.
 
-		
-		//ALL OF THIS IS ALREADY DECLARED IN GLOBALS
-	    //File mediaStorageDir = new File(Globals.getPath(), "Videos");
-	    // This location works best if you want the created images to be shared
-	    // between applications and persist after your app has been uninstalled.
-
-	    // Create the storage directory if it does not exist
-//	    if (! mediaStorageDir.exists()){
-//	        if (! mediaStorageDir.mkdirs()){
-//	            Log.d("MyCameraApp", "failed to create directory");
-//	            return null;
-//	        }
-//	    }
-
-	   
+	private static File getOutputMediaFile(int type){	   
 	    File mediaFile;
 	    if (type == Globals.MEDIA_TYPE_IMAGE) {
 			mediaFile = new File(Globals.getPath() + File.separator
