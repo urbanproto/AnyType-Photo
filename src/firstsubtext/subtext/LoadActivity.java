@@ -254,13 +254,48 @@ public class LoadActivity extends Activity {
 		Globals.saved_lv = null;
 		Globals.playback_mode = false;
 
+		Button new_font = (Button) findViewById(id.button_new);
+		new_font.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startNewFont();
+			}
+		});
 		
+		Button new_font_video = (Button) findViewById(id.button_new_video);
+		new_font_video.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startNewFontWithVideo();
+			}
+		});
 		
-		Intent intent = new Intent(this, CanvasActivity.class);
-		startActivity(intent);
-
+		Button button_load = (Button) findViewById(id.button_load);
+		button_load.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				loadExistingFont();
+			}
+		});
 
 	}
+	
+	public void startNewFont(){
+		Intent intent = new Intent(this, CaptureActivity.class);
+		startActivity(intent);
+	}
+	
+	public void startNewFontWithVideo(){
+		Intent intent = new Intent(this, VideoCaptureActivity.class);
+		startActivity(intent);
+	}
+	
+	public void loadExistingFont(){
+		Intent intent = new Intent(this, LoadFontActivity.class);
+		startActivity(intent);
+	}
+	
+	
 
 	@Override
 	public void onRestart() {

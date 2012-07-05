@@ -62,8 +62,8 @@ public class Globals {
 						.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
 				"SI_" + timeStamp);
 		
-		//base_dir_name = "SI_" + timeStamp;
-		base_dir_name = "testdir";
+		base_dir_name = "SI_" + timeStamp;
+		//base_dir_name = "testdir";
 	
 
 		if (!mediaStorageDir.exists()) {
@@ -258,6 +258,16 @@ public class Globals {
 				Environment
 						.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
 				base_dir_name);
+		return testDir.getPath();
+		
+		
+	}
+	
+	public static String getBasePath() {
+		File testDir = new File(
+				Environment
+						.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
+				"");
 		return testDir.getPath();
 		
 		

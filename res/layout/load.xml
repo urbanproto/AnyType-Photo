@@ -13,19 +13,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
-            <GridView
-                android:id="@+id/grid_letters"
-                android:layout_width="107dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.66"
-                android:numColumns="3" >
-            </GridView>
-
             <ListView
                 android:id="@+id/list_names"
                 android:layout_width="374dp"
                 android:layout_height="677dp" >
             </ListView>
+
+           
+
         </LinearLayout>
 
     </ScrollView>

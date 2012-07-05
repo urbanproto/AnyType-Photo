@@ -171,35 +171,7 @@ public class CanvasActivity extends Activity implements OnTouchListener {
 		}
 		
 	
-		
-		
-		
-		/*final EditText et = (EditText) findViewById(R.id.font_name);
-		et.setOnKeyListener(new OnKeyListener() {
-		    public boolean onKey(View v, int keyCode, KeyEvent event) {
-		        // If the event is a key-down event on the "enter" button
-		    	EditText view = (EditText) v;
-		        if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-		            (keyCode == KeyEvent.KEYCODE_ENTER)) {
-					String s = view.getText().toString();
-					// File (or directory) to be moved
-					File file = new File(Globals.getPath());
-
-					// Destination directory
-					File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),s);
-
-					// Move file to new directory
-					boolean success = file.renameTo(new File(dir, file.getName()));
-					if (!success) {
-						Globals.changeDirectory(dir);
-						Log.d("Text", "Move Failed");
-					}
-		          return true;
-		        }
-		        return false;
-		    }
-		});
-		*/
+	
 		
 	}
 	
