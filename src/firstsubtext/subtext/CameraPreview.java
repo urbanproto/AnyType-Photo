@@ -17,6 +17,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private static final String TAG = "";
 	private SurfaceHolder mHolder;
     private Camera mCamera;
+     
 
     public CameraPreview(Context context, Camera camera) {
         super(context);
@@ -40,11 +41,42 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             Log.d(TAG, "Error setting camera preview: " + e.getMessage());
         }
     }
+    
+ 
+
+    /**
+      * When this function returns, mCamera will be null.
+      */
+//    private void stopPreviewAndFreeCamera() {
+//
+//        if (mCamera != null) {
+//            /*
+//              Call stopPreview() to stop updating the preview surface.
+//            */
+//            mCamera.stopPreview();
+//        
+//            /*
+//              Important: Call release() to release the camera for use by other applications. 
+//              Applications should release the camera immediately in onPause() (and re-open() it in
+//              onResume()).
+//            */
+//            mCamera.release();
+//        
+//            mCamera = null;
+//        }
+//    }
+    
+   public void surfaceDestroyed(SurfaceHolder holder) {
+//        // Surface will be destroyed when we return, so stop the preview.
+//        if (mCamera != null) {
+//            /*
+//              Call stopPreview() to stop updating the preview surface.
+//            */
+//            mCamera.stopPreview();
+//        }
+    }
 
     
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        // empty. Take care of releasing the Camera preview in your activity.
-    }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
         // If your preview can change or rotate, take care of those events here.
@@ -67,13 +99,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		Parameters parameters = mCamera.getParameters();
     	parameters.setPreviewSize(1280, 720);
     	parameters.setPictureSize(1280, 720);
-    	
-//    	List<Size> sizes = parameters.getSupportedPictureSizes();
-//		Iterator it = sizes.iterator();
-//		while(it.hasNext()){
-//			Size s = (Size)it.next();
-//			Log.d("Preview Sizes", s.width +" x " + s.height);
-//		}
+
+    	Log.d("Video","White Balance: "+parameters.getWhiteBalance());
+    	Log.d("Video","Flash: "+parameters.getFlashMode());
+    	Log.d("Video","Exposure: "+parameters.getExposureCompensation());
+    	Log.d("Video","ColorEffect: "+parameters.getColorEffect());
+
+
    
 		mCamera.setParameters(parameters);
 		

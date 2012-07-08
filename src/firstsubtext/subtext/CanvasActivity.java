@@ -47,6 +47,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -89,21 +90,43 @@ public class CanvasActivity extends Activity implements OnTouchListener {
 		letter_grid = (GridView) findViewById(R.id.letter_grid);
 		letter_grid.setAdapter(new LetterAdapter(this));
 
-		letter_grid.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View v,
-					int position, long id) {
-				addToCanvas(position);
-			}
-		});
 		
-		letter_grid.setOnItemLongClickListener(new OnItemLongClickListener(){
-			public boolean onItemLongClick(AdapterView<?> parent, View v,
-					int position, long id) {
-				addToCanvas(position);
-				return true;
-			}
-		});
 		
+//		letter_grid.setOnItemClickListener(new OnItemClickListener() {
+//			public void onItemClick(AdapterView<?> parent, View v,
+//					int position, long id) {
+//				Log.d("Delete", "Item "+position+"selected");
+//
+//				addToCanvas(position);
+//			}
+//		});
+//		
+//		letter_grid.setOnItemLongClickListener(new OnItemLongClickListener(){
+//			public boolean onItemLongClick(AdapterView<?> parent, View v,
+//					int position, long id) {
+//				addToCanvas(position);
+//				return true;
+//			}
+//		});
+//		
+//						
+//		Log.d("Delete", "Something");
+//
+//		letter_grid.setOnItemSelectedListener(new OnItemSelectedListener(){
+//
+//			@Override
+//			public void onItemSelected(AdapterView<?> parent, View v,
+//					int position, long id) {
+//				Log.d("Delete", "Item "+position+"selected");
+//				
+//			}
+//
+//			@Override
+//			public void onNothingSelected(AdapterView<?> parent) {
+//				Log.d("Delete", "Nothing selected");
+//				
+//			}});
+//		
 		
 		
 		
@@ -251,19 +274,71 @@ public class CanvasActivity extends Activity implements OnTouchListener {
 		Intent intent = new Intent(this, LoadActivity.class);
 		startActivity(intent);
 	}
+	
 
-	public void addToCanvas(int id) {
-		letter_view.addLetter(id);
+
+	public void addToCanvas(ImageView v, MotionEvent e) {
+		float x = (letter_view.getWidth()/26*v.getId())+e.getX();
+		
+		
+		letter_view.addLetter(v.getId());
 		letter_view.invalidate();
+		letter_view.updatePosition(x, 61f);
+		
+		Log.d("Delete", "POS: " + e.getX());
+		
+    	
+
+
+		MotionEvent motionEvent = MotionEvent.obtain(e);
+		e.setAction(MotionEvent.ACTION_DOWN);
+		e.setLocation(x, 65f);
+		motionEvent = MotionEvent.obtainNoHistory(e);
+		letter_view.dispatchTouchEvent(motionEvent);
+		
+//		MotionEvent copy = MotionEvent.obtain(e);
+//    	copy.setAction(MotionEvent.ACTION_UP);
+//    	boolean success = v.dispatchTouchEvent(copy);
+//		Log.d("Delete", "Cancel Success?: " + success);
+		
+//		
+//		MotionEvent motionEvent = MotionEvent.obtain(
+//			    10, 
+//			    10, 
+//			    MotionEvent.ACTION_DOWN, 
+//			    x, 
+//			    65f, 
+//			    metaState
+//			);
+//
+//			// Dispatch touch event to view
+		
+		/*
+
+		e.setLocation(x, 65f);
+
+		
+		e.setAction(MotionEvent.ACTION_UP);
+		onTouch(letter_view, e);
+		
+		e.setAction(MotionEvent.ACTION_DOWN);
+		//e.setLocation(x, 65f);
+		onTouch(letter_view, e);
+		
+		e.setAction(MotionEvent.ACTION_MOVE);
+		//e.setLocation(x, 65f);
+		onTouch(letter_view, e);
+		*/
+
+		//pass the touch event off to the new handler
 	}
 
 	// Implement the OnTouchListener callback
 	public boolean onTouch(View v, MotionEvent event) {
-		Log.d("Touch", "Action: " + event.getAction());
-		Log.d("Touch", "Action Index: " + event.getActionIndex());
+		Log.d("Delete", "Action: " + event.getAction());
+		Log.d("Delete", "Action Index: " + event.getActionIndex());
 
 		int selected;
-
 		LetterView lv = (LetterView) v;
 
 
@@ -277,9 +352,11 @@ public class CanvasActivity extends Activity implements OnTouchListener {
 			
 		} else if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			
-			
+		
 			selected = lv.locate((int) event.getX(), (int) event.getY());
+			Log.d("Delete", "Selected Letter "+selected+" Cur "+lv.getCur());
 
+			
 			if (selected != lv.getCur() && lv.getCur() != -1)
 				lv.deselect(lv.getCur());
 			if (selected == -1)
@@ -311,9 +388,10 @@ public class CanvasActivity extends Activity implements OnTouchListener {
 			selected = lv.getCur();
 			if (selected == -1)
 				return true;
-
+			
 			lv.updatePosition(event.getX(), event.getY());
 
+			Log.d("Delete", "Update Position");
 			if (two_finger) {
 				try {
 

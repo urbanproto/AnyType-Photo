@@ -61,8 +61,9 @@ public class LoadFontAdapter extends BaseAdapter {
         if (convertView == null) {  // if it's not recycled, initialize some attributes
         	textView = new TextView(mContext);
         	textView.setWidth(1280);
-        	textView.setHeight(30);
-        	textView.setTextSize(16);
+        	textView.setHeight(40);
+        	textView.setLeft(10);
+        	textView.setTextSize(24);
         	
            
         } else {

@@ -66,10 +66,10 @@ public class CaptureActivity extends Activity{
 		Log.d("Canvas Call", "On Create Called");
 
 		//looks at the current stage and builds any letters it can
-		Globals.buildLetters();
 		
 		//if we've captured all the images, move to the canvas stage
 		if(Globals.stage > 4){
+			Globals.buildLetters();
 
 			Intent intent = new Intent(this, CanvasActivity.class);
 			startActivity(intent);			
@@ -77,6 +77,14 @@ public class CaptureActivity extends Activity{
 
 
 		}else{
+			Thread buildLettersThread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					Globals.buildLetters();
+				}
+			});
+			buildLettersThread.setDaemon(true);
+			buildLettersThread.start();
 			Log.d("Canvas Call", "In Else");
 
 			

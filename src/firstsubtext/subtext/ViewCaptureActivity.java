@@ -20,6 +20,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -66,9 +67,6 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 			playVideo.setVisibility(View.INVISIBLE);
 		}
 		
-		
-		
-	
 		
 		
 		// add accept button listener
@@ -138,8 +136,6 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 	public boolean onTouch(View v, MotionEvent event) {
 		Log.d("Touch", "Action: " + event.getAction());
 		Log.d("Touch", "Action Index: " + event.getActionIndex());
-		
-		
 
 		int selected;
 
@@ -158,10 +154,8 @@ public class ViewCaptureActivity extends Activity implements OnTouchListener{
 		return true;
 
 	}
-	
-
-	
-	
-
 
 }
+
+
+

@@ -36,6 +36,9 @@ public class Globals {
 	static int grab_num = 0;
 	static String base_dir_name;
 	
+	static BuildLettersTask build_thread = new BuildLettersTask();
+
+	
 	static boolean playback_mode = false;
 	static int force_stage = 0;
 	static int force_letter = 0;

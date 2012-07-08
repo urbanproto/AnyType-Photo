@@ -17,9 +17,9 @@
 		    android:horizontalSpacing="6dp"
 		    android:stretchMode="columnWidth"
 		    android:gravity="center"
-		    android:longClickable="true"
-          />
-        
+		    android:drawSelectorOnTop="true"
+           android:focusableInTouchMode="true" 
+/>        
         
 
         <FrameLayout
@@ -43,13 +43,7 @@
                 android:layout_height="wrap_content"
                 android:text="Touch To Play Videos" />
 
-         <!--    <EditText
-                android:id="@+id/font_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.11"
-                android:ems="10"
-                android:text="enter font name" /> -->
+       
 
             <Space
                 android:layout_width="700dp"

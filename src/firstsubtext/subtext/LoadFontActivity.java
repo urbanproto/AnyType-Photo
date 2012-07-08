@@ -67,6 +67,12 @@ public class LoadFontActivity extends Activity {
 					openFont((tv.getText()).toString());
 			}
 		});
+		
+//		
+//		GridView gv = (GridView) findViewById(R.id.grid_view);
+//		gv.setAdapter(new LetterAdapter(this));
+//
+//		
 	
 	}
 	

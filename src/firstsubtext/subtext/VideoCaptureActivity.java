@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import firstsubtext.subtext.R.id;
 
@@ -16,6 +20,7 @@ import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
@@ -27,199 +32,226 @@ import android.widget.ProgressBar;
 
 public class VideoCaptureActivity extends Activity {
 	private Camera mCamera;
-    private SurfaceView mPreview;
-    private MediaRecorder mMediaRecorder;
+	private SurfaceView mPreview;
+	private MediaRecorder mMediaRecorder;
 	private static DrawShapeOnTop shapeView;
 	private FrameLayout preview;
 	private boolean isRecording = false;
+	private Timer timer;
+	private int max_time = 15000;
+	private TimerTask timer_task;
+	private int interval = 1;
 	private ProgressBar mProgress;
-	private long 	start_time;
-	private long 	cur_time;
+	private int ticks = 0;
 
-    
-    /** Called when the activity is first created. */
+	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.videocameracapture);
+
 		Log.d("Video Canvas Call", "On Create Called");
-
-		//looks at the current stage and builds any letters it can
-		Globals.buildLetters();
+	    mProgress  = (ProgressBar) findViewById(id.progress_bar);
+		mProgress.setMax(max_time);
+		mProgress.setProgress(ticks);
+		mProgress.setVisibility(View.INVISIBLE);
 		
-		//if we've captured all the images, move to the canvas stage
-		if(Globals.stage > 4){
+		// Spawn a thread to build the letters
+		// Start lengthy operation in a background thread
+		timer_task = new TimerTask() {
+			Handler handler = new Handler();
+			public void run() {
+				handler.post(new Runnable(){
+					public void run(){
+						mProgress.setProgress(++ticks);
+						if(ticks == max_time) endRecording();
+					}
+				});				
+			}
+		};
 
+
+		// if we've captured all the images, move to the canvas stage
+		if (Globals.stage > 4) {
+			Globals.buildLetters();
 			Intent intent = new Intent(this, CanvasActivity.class);
-			startActivity(intent);			
+			startActivity(intent);
 			Globals.resetStage();
 
-
-		}else{
-			Log.d("Canvas Call", "In Else");
-
+		} else {
 			
-			requestWindowFeature(Window.FEATURE_NO_TITLE);
-			setContentView(R.layout.videocameracapture);
-			
-		
-		
-		
-			
-				
-			
-        mProgress = (ProgressBar) findViewById(R.id.progress_bar);
-        mProgress.setMax(15000);
 
-		
-//		// Add a listener to the Capture button
-//		Button captureButton = (Button) findViewById(id.button_capture);
-//		captureButton.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				// get an image from the camera
-//				//mCamera.takePicture(null, null, mPicture);
-//			}
-//		});
-		
-	Button captureButton = (Button) findViewById(id.button_capture);
-		captureButton.setOnClickListener(
-		    new View.OnClickListener() {
-		        @Override
-		        public void onClick(View v) {
-		            if (isRecording) {
-		                // stop recording and release camera
-		                mMediaRecorder.stop();  // stop the recording
-		                releaseMediaRecorder(); // release the MediaRecorder object
-		                mCamera.lock();         // take camera access back from MediaRecorder
+			Thread buildLettersThread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					Globals.buildLetters();
+				}
+			});
+			buildLettersThread.setDaemon(true);
+			buildLettersThread.start();
 
-		                // inform the user that recording has stopped
-		                setCaptureButtonText("Capture");
-		                isRecording = false;
-		                
-		    			nextScreen();
+			Button captureButton = (Button) findViewById(id.button_capture);
+			captureButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (isRecording) {
+						timer.cancel();
+						endRecording();
+					} else {
+						mCamera.takePicture(null, null, mPicture);
+					}
+				}
+			});
 
-		            } else {
-		            	
-		            	//first capture the photo
-		            	mCamera.takePicture(null, null, mPicture);
-		            	start_time = System.currentTimeMillis();
-		            	
-		                // initialize video camera
-		                if (prepareVideoRecorder()) {
-		                    // Camera is available and unlocked, MediaRecorder is prepared,
-		                    // now you can start recording
-		                    mMediaRecorder.start();
+			// Create an instance of Camera
+			mCamera = getCameraInstance();
+			mPreview = new CameraPreview(this, mCamera);
+			// prepareVideoRecorder();
 
-		                    // inform the user that recording has started
-		                    setCaptureButtonText("Stop");
-		                    isRecording = true;
-		                } else {
-		                    // prepare didn't work, release the camera
-		                    releaseMediaRecorder();
-		                    // inform user
-		                }
-		            }
-		        }
-		    }
-		);
-	
+			// Create our Preview view and set it as the content of our
+			// activity.
+			shapeView = new DrawShapeOnTop(this, Globals.getStageShape(), false);
 
-		// Create an instance of Camera
-		mCamera = getCameraInstance();
-		mPreview = new CameraPreview(this, mCamera);
-		prepareVideoRecorder();
-		
-		
+			preview = (FrameLayout) findViewById(id.camera_preview);
+			preview.addView(mPreview);
+			preview.addView(shapeView, new LayoutParams(
+					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
-		// Create our Preview view and set it as the content of our activity.
-		shapeView = new DrawShapeOnTop(this, Globals.getStageShape(), false);
 
-		preview = (FrameLayout) findViewById(id.camera_preview);
-		preview.addView(mPreview);
-		preview.addView(shapeView, new LayoutParams(LayoutParams.WRAP_CONTENT,
-				LayoutParams.WRAP_CONTENT));
-				
-		
 		}
+
+	}
+
+
 	
+	private void startTimer() {
+		mProgress.setProgress(ticks);
+		mProgress.setVisibility(View.VISIBLE);
+		
+		timer = new Timer();
+		timer.scheduleAtFixedRate(timer_task, 0, interval);
 	}
 	
-	private void setCaptureButtonText(String text){
+
+
+
+
+	private void endRecording() {
+		// stop recording and release camera
+		mMediaRecorder.stop(); // stop the recording
+		releaseMediaRecorder(); // release the MediaRecorder object
+		mCamera.lock(); // take camera access back from MediaRecorder
+
+		// inform the user that recording has stopped
+		setCaptureButtonText("Capture");
+		isRecording = false;
+
+		nextScreen();
+	}
+
+	private void initRecording() {
+		Log.d("Video", "Started Recording");
+
+		// initialize video camera
+		if (prepareVideoRecorder()) {
+			Log.d("Video", "Start Recording");
+
+			// Camera is available and unlocked, MediaRecorder is prepared,
+			// now you can start recording
+			mMediaRecorder.start();
+
+			// inform the user that recording has started
+			setCaptureButtonText("Stop");
+			isRecording = true;
+
+			startTimer();
+		} else {
+			// prepare didn't work, release the camera
+			releaseMediaRecorder();
+			// inform user
+		}
+	}
+
+	private void setCaptureButtonText(String text) {
 		Button captureButton = (Button) findViewById(id.button_capture);
 		captureButton.setText(text);
 
 	}
-	
+
 	private void nextScreen() {
 		Log.d("Capture Activity", "Create Intent");
 		Intent intent = new Intent(this, ViewCaptureActivity.class);
 		startActivity(intent);
 	}
-	
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        releaseMediaRecorder();       // if you are using MediaRecorder, release it first
-        releaseCamera();              // release the camera immediately on pause event
-    }
-
-    private void releaseMediaRecorder(){
-        if (mMediaRecorder != null) {
-            mMediaRecorder.reset();   // clear recorder configuration
-            mMediaRecorder.release(); // release the recorder object
-            mMediaRecorder = null;
-            mCamera.lock();           // lock camera for later use
-        }
-    }
-
-    private void releaseCamera(){
-        if (mCamera != null){
-            mCamera.release();        // release the camera for other applications
-            mCamera = null;
-        }
-    }
-    
-    
-    private boolean prepareVideoRecorder(){
-
-	    //mCamera = getCameraInstance(); //already called before this function
-	    mMediaRecorder = new MediaRecorder();
-
-	    // Step 1: Unlock and set camera to MediaRecorder
-	    mCamera.unlock();
-	    mMediaRecorder.setCamera(mCamera);
-
-	    // Step 2: Set sources
-	    mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
-	    mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-
-	    // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
-	    mMediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
-
-	    // Step 4: Set output file
-	    mMediaRecorder.setOutputFile(getOutputMediaFile(Globals.MEDIA_TYPE_VIDEO).toString());
-
-	    // Step 5: Set the preview output
-	    mMediaRecorder.setPreviewDisplay(mPreview.getHolder().getSurface());
-
-	    // Step 6: Prepare configured MediaRecorder
-	    try {
-	        mMediaRecorder.prepare();
-	    } catch (IllegalStateException e) {
-	        Log.d("Video Capture", "IllegalStateException preparing MediaRecorder: " + e.getMessage());
-	        releaseMediaRecorder();
-	        return false;
-	    } catch (IOException e) {
-	        Log.d("Video Capture", "IOException preparing MediaRecorder: " + e.getMessage());
-	        releaseMediaRecorder();
-	        return false;
-	    }
-	    return true;
+	@Override
+	protected void onPause() {
+		super.onPause();
+		releaseMediaRecorder(); // if you are using MediaRecorder, release it
+		timer.cancel(); // first
+		timer.purge();
+		releaseCamera(); // release the camera immediately on pause event
 	}
-    
-    
+
+	private void releaseMediaRecorder() {
+		if (mMediaRecorder != null) {
+			mMediaRecorder.reset(); // clear recorder configuration
+			mMediaRecorder.release(); // release the recorder object
+			mMediaRecorder = null;
+			mCamera.lock(); // lock camera for later use
+		}
+	}
+
+	private void releaseCamera() {
+		if (mCamera != null) {
+			mCamera.release(); // release the camera for other applications
+			mCamera = null;
+		}
+	}
+
+	private boolean prepareVideoRecorder() {
+
+		// mCamera = getCameraInstance(); //already called before this function
+		mMediaRecorder = new MediaRecorder();
+
+		// Step 1: Unlock and set camera to MediaRecorder
+		mCamera.unlock();
+		mMediaRecorder.setCamera(mCamera);
+
+		// Step 2: Set sources
+		mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+		mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+
+		// Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
+		mMediaRecorder.setProfile(CamcorderProfile
+				.get(CamcorderProfile.QUALITY_HIGH));
+
+		// Step 4: Set output file
+		mMediaRecorder.setOutputFile(getOutputMediaFile(
+				Globals.MEDIA_TYPE_VIDEO).toString());
+
+		// Step 5: Set the preview output
+		mMediaRecorder.setPreviewDisplay(mPreview.getHolder().getSurface());
+
+		// Step 6: Prepare configured MediaRecorder
+		try {
+			mMediaRecorder.prepare();
+		} catch (IllegalStateException e) {
+			Log.d("Video Capture",
+					"IllegalStateException preparing MediaRecorder: "
+							+ e.getMessage());
+			releaseMediaRecorder();
+			return false;
+		} catch (IOException e) {
+			Log.d("Video Capture",
+					"IOException preparing MediaRecorder: " + e.getMessage());
+			releaseMediaRecorder();
+			return false;
+		}
+		return true;
+	}
+
 	public static Camera getCameraInstance() {
 		Camera c = null;
 		try {
@@ -230,12 +262,10 @@ public class VideoCaptureActivity extends Activity {
 		}
 		return c; // returns null if camera is unavailable
 	}
-	
 
-
-	private static File getOutputMediaFile(int type){	   
-	    File mediaFile;
-	    if (type == Globals.MEDIA_TYPE_IMAGE) {
+	private static File getOutputMediaFile(int type) {
+		File mediaFile;
+		if (type == Globals.MEDIA_TYPE_IMAGE) {
 			mediaFile = new File(Globals.getTestPath() + File.separator
 					+ "IMG_" + Integer.toString(Globals.stage) + ".jpg");
 		} else if (type == Globals.MEDIA_TYPE_VIDEO) {
@@ -245,14 +275,14 @@ public class VideoCaptureActivity extends Activity {
 			return null;
 		}
 
-	    return mediaFile;
+		return mediaFile;
 	}
-	
-	//CONSIDER MAKING THIS A GLOBAL FUNCTION
+
+	// this is called when the data is ready
 	private PictureCallback mPicture = new PictureCallback() {
 		@Override
 		public void onPictureTaken(byte[] data, Camera camera) {
-			Log.d("Capture Activity", "Picture Taken");
+			Log.d("Video Activity", "Picture Taken");
 
 			File pictureFile = getOutputMediaFile(Globals.MEDIA_TYPE_IMAGE);
 			if (pictureFile == null) {
@@ -264,7 +294,6 @@ public class VideoCaptureActivity extends Activity {
 				fos.write(data);
 				fos.close();
 				Log.d("Capture Activity", "File Created");
-				
 
 			} catch (FileNotFoundException e) {
 				Log.d("", "File not found: " + e.getMessage());
@@ -272,13 +301,13 @@ public class VideoCaptureActivity extends Activity {
 				Log.d("", "Error accessing file: " + e.getMessage());
 			}
 
+			initRecording();
+
+			// let's spawn a background thread to do the letters
+			// Globals.build_thread.execute();
+
 		}
 
 	};
 
-    
 }
-	
-	
-	
-

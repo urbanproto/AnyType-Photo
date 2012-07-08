@@ -112,6 +112,8 @@ class LetterView extends View {
 			Map.Entry me = (Map.Entry) it.next();
 			LetterInstance li = (LetterInstance) me.getValue();
 			
+			
+			
 			if(li.contains(x, y)){
 				return (Integer) me.getKey();
 			}
