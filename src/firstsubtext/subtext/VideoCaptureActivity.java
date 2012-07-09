@@ -29,6 +29,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
 public class VideoCaptureActivity extends Activity {
 	private Camera mCamera;
@@ -117,6 +119,40 @@ public class VideoCaptureActivity extends Activity {
 			preview.addView(mPreview);
 			preview.addView(shapeView, new LayoutParams(
 					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			
+			
+			SeekBar seek = (SeekBar) findViewById(id.seek);
+			seek.setProgress(0);
+			Camera.Parameters cp = mCamera.getParameters();
+			if(cp.isZoomSupported()){
+				seek.setVisibility(View.VISIBLE);
+				seek.setMax(cp.getMaxZoom());
+				seek.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
+		
+					@Override
+					public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
+						// TODO Auto-generated method stub
+						Camera.Parameters cp = mCamera.getParameters();
+						cp.setZoom(arg1);
+						mCamera.setParameters(cp);
+					}
+		
+					@Override
+					public void onStartTrackingTouch(SeekBar seekBar) {
+						// TODO Auto-generated method stub
+						
+					}
+		
+					@Override
+					public void onStopTrackingTouch(SeekBar seekBar) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+				});
+			}else{
+				seek.setVisibility(View.INVISIBLE);
+			}
 
 
 		}

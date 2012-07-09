@@ -24,5 +24,12 @@
           android:layout_marginTop="300px"
           android:text="Capture" android:background="#333333"/>
 
+      <SeekBar
+          android:id="@+id/seek"
+          android:layout_width="131dp"
+          android:layout_height="wrap_content"
+          android:layout_marginLeft="1100px"
+          android:layout_marginTop="390px" />
+
 	</FrameLayout>  
 </FrameLayout>

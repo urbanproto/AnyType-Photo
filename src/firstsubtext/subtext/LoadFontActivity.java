@@ -29,15 +29,18 @@ import android.hardware.Camera.PictureCallback;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.view.ViewGroup.LayoutParams;
@@ -57,22 +60,56 @@ public class LoadFontActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.load);
 
-		ListView lv = (ListView) findViewById(R.id.list_names);
-		lv.setAdapter(new LoadFontAdapter(this));
-
-		lv.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View v,
-					int position, long id) {
-					TextView tv = (TextView) v;
-					openFont((tv.getText()).toString());
-			}
-		});
+//		ListView lv = (ListView) findViewById(R.id.list_names);
+//		lv.setAdapter(new LoadFontAdapter(this));
+//
+//		lv.setOnItemClickListener(new OnItemClickListener() {
+//			public void onItemClick(AdapterView<?> parent, View v,
+//					int position, long id) {
+//					TextView tv = (TextView) v;
+//					openFont((tv.getText()).toString());
+//			}
+//		});
+		
 		
 //		
 //		GridView gv = (GridView) findViewById(R.id.grid_view);
 //		gv.setAdapter(new LetterAdapter(this));
 //
-//		
+//
+		LinearLayout list = (LinearLayout) findViewById(R.id.list);
+		File dir = new File(Globals.getBasePath());
+        String[] children = dir.list();
+
+        
+        if (children == null) {
+            // Either dir does not exist or is not a directory
+        } else {
+            for (int i=0; i<children.length; i++) {
+            	Button b = new Button(this);
+                String filename = children[i];
+                b.setText(filename);
+                b.setWidth(400);
+                b.setGravity(Gravity.CENTER);
+                b.setOnClickListener(new OnClickListener(){
+
+					@Override
+					public void onClick(View view) {
+						 Button but = (Button) view;
+						 openFont(but.getText().toString());
+						
+					}
+                	
+                });
+                
+                
+                list.addView(b, new LayoutParams(LayoutParams.WRAP_CONTENT,
+        				LayoutParams.WRAP_CONTENT));
+            }
+        }
+		
+
+		
 	
 	}
 	

@@ -409,8 +409,10 @@ public class CanvasActivity extends Activity implements OnTouchListener {
 			if (two_finger) {
 				try {
 
+					//make sure it does one or the other but not both
 					lv.updateScale(Globals.getScale(event.getX(0),
 							event.getY(0), event.getX(1), event.getY(1)));
+					
 					
 //					lv.setRotations(Globals.getRotation(event.getX(0),
 //							event.getY(0), event.getX(1), event.getY(1)));

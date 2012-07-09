@@ -320,31 +320,36 @@ public class Globals {
 
 	public static float getRotation(float x, float y, float x2, float y2) {
 
-		float[] finger1 = new float[2];
-		float[] finger2 = new float[2];
-
-		if (lastfinger1[0] == -1
-				|| sqrdist(x, y, lastfinger1[0], lastfinger1[1]) <= sqrdist(x,
-						y, lastfinger2[0], lastfinger2[1])) {
-			finger1[0] = x;
-			finger1[1] = y;
-			finger2[0] = x2;
-			finger2[1] = y2;
-		} else {
-			finger1[0] = x2;
-			finger1[1] = y2;
-			finger2[0] = x;
-			finger2[1] = y;
-		}
-
-		float dx = finger2[0] - finger1[0];
-		float dy = finger2[1] - finger2[0];
-
+//		float[] finger1 = new float[2];
+//		float[] finger2 = new float[2];
+//
+//		if (lastfinger1[0] == -1
+//				|| sqrdist(x, y, lastfinger1[0], lastfinger1[1]) <= sqrdist(x,
+//						y, lastfinger2[0], lastfinger2[1])) {
+//			finger1[0] = x;
+//			finger1[1] = y;
+//			finger2[0] = x2;
+//			finger2[1] = y2;
+//		} else {
+//			finger1[0] = x2;
+//			finger1[1] = y2;
+//			finger2[0] = x;
+//			finger2[1] = y;
+//		}
+//
+//		float dx = finger2[0] - finger1[0];
+//		float dy = finger2[1] - finger2[0];
+//
+//		float angle = (float) Math.toDegrees(Math.atan(dy / dx));
+//		Log.d("Matrix", "Returning Angle " + angle);
+//
+//		lastfinger1 = finger1;
+//		lastfinger2 = finger2;
+		
+		float dx = x2 - x;
+		float dy = y2 - y;
 		float angle = (float) Math.toDegrees(Math.atan(dy / dx));
-		Log.d("Matrix", "Returning Angle " + angle);
 
-		lastfinger1 = finger1;
-		lastfinger2 = finger2;
 
 		return angle;
 	}
