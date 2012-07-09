@@ -99,11 +99,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		Parameters parameters = mCamera.getParameters();
     	parameters.setPreviewSize(1280, 720);
     	parameters.setPictureSize(1280, 720);
+    	parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
 
     	Log.d("Video","White Balance: "+parameters.getWhiteBalance());
     	Log.d("Video","Flash: "+parameters.getFlashMode());
     	Log.d("Video","Exposure: "+parameters.getExposureCompensation());
     	Log.d("Video","ColorEffect: "+parameters.getColorEffect());
+    	Log.d("Video","SceneMode: "+parameters.getSceneMode());
 
 
    

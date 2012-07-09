@@ -46,7 +46,7 @@
        
 
             <Space
-                android:layout_width="700dp"
+                android:layout_width="630dp"
                 android:layout_height="match_parent" />
 
             <Button
@@ -55,6 +55,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="New Font" />
+            
+            <Button
+                android:id="@+id/button_edit"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit Font" />
 
             <Button
                 android:id="@+id/button_save_canvas"

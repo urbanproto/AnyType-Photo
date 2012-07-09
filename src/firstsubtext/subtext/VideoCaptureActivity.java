@@ -189,8 +189,6 @@ public class VideoCaptureActivity extends Activity {
 	protected void onPause() {
 		super.onPause();
 		releaseMediaRecorder(); // if you are using MediaRecorder, release it
-		timer.cancel(); // first
-		timer.purge();
 		releaseCamera(); // release the camera immediately on pause event
 	}
 

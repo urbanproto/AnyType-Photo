@@ -125,7 +125,7 @@ class DrawShapeOnTop extends View {
 			if(custom){
 				paint.setStyle(Paint.Style.STROKE);
 				paint.setColor(Color.CYAN);
-				paint.setStrokeWidth(4);
+				paint.setStrokeWidth(8);
 				canvas.drawPath(custom_path, paint);
 			}
 		}else{

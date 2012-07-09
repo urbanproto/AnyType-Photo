@@ -96,6 +96,9 @@ public class CaptureActivity extends Activity{
 		captureButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				
+			
+		    	
 				// get an image from the camera
 				mCamera.takePicture(null, null, mPicture);
 			}

@@ -162,6 +162,14 @@ public class CanvasActivity extends Activity implements OnTouchListener {
 			}
 		});
 		
+		Button editButton = (Button) findViewById(id.button_edit);
+		editButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				launchEditor();
+			}
+		});
+		
 		
 		Button saveFontButton = (Button) findViewById(id.button_save_font);
 		saveFontButton.setOnClickListener(new View.OnClickListener() {
@@ -224,6 +232,12 @@ public class CanvasActivity extends Activity implements OnTouchListener {
 		});
 
 		alert.show();
+	}
+	
+	
+	private void launchEditor(){
+		Intent intent = new Intent(this, EditActivity.class);
+		startActivity(intent);
 	}
 	
 	@Override

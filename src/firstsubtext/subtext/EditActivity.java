@@ -45,11 +45,11 @@ import android.view.ViewGroup.LayoutParams;
 
 //each activity is a state. 
 //this is the photo capture activity. It takes a picture 
-public class LetterVideoPlayerActivity extends Activity {
+public class EditActivity extends Activity {
 
 	protected static final String TAG = null;
-	private GridView mGrid;
-	private LetterView letter_view;
+	private GridView mGridOutline;
+	private GridView mGridPhoto;
 
 
 
@@ -58,47 +58,47 @@ public class LetterVideoPlayerActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.lettervideo);
+		setContentView(R.layout.edit);
 
-		Log.d("Canvas Call", "Find Grid View");
-		mGrid = (GridView) findViewById(R.id.letter_grid);
-		mGrid.setAdapter(new LetterPhotoAdapter(this, false, false));
-
-		mGrid.setOnItemClickListener(new OnItemClickListener() {
+		mGridOutline = (GridView) findViewById(R.id.grid_retrace);
+		mGridOutline.setAdapter(new LetterPhotoAdapter(this, false, true));
+		mGridOutline.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				launchVideo(v.getId());
+					launchCapture(position);
 			}
 		});
 		
-		letter_view = new LetterView(this);
-		letter_view.addSingleLetter(Globals.force_letter);
-		//letter_view.deselect(Globals.force_letter);
-		
-		FrameLayout letter_frame = (FrameLayout) findViewById(R.id.letter_frame);
-		letter_frame.addView(letter_view, new LayoutParams(LayoutParams.WRAP_CONTENT,
-				LayoutParams.WRAP_CONTENT));
-		
-
-		Button back_button = (Button) findViewById(id.button_back);
-		back_button.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Globals.playback_mode = false;
-				finish();
+		mGridPhoto = (GridView) findViewById(R.id.grid_new_photo);
+		mGridPhoto.setAdapter(new LetterPhotoAdapter(this, true, true));
+		mGridPhoto.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View v,
+					int position, long id) {
+				//launchVideo(v.getId());
+				//launchCaptureAdapter
 			}
 		});
-	    
+		
 	}
 
 	
 	//launch the video player when clicked
-	public void launchVideo(int stage){
+	public void launchCapture(int stage){
 		
 		Globals.playback_mode = true;
 		Globals.force_stage = stage;
 		
-		Intent intent = new Intent(this, VideoPlayerActivity.class);
+		Intent intent = new Intent(this, VideoCaptureActivity.class);
+		startActivity(intent);
+	}
+	
+	//launch the video player when clicked
+	public void launchRetrace(int stage){
+		
+		Globals.playback_mode = true;
+		Globals.force_stage = stage;
+		
+		Intent intent = new Intent(this, ViewCaptureActivity.class);
 		startActivity(intent);
 	}
 

@@ -5,31 +5,33 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:gravity="center_vertical">
+    
+    <ProgressBar
+       android:id="@+id/progress_bar"
+       style="?android:attr/progressBarStyleHorizontal"
+       android:layout_width="1280px"
+       android:layout_height="40px"
+       android:layout_marginTop="720px" />
 
   <FrameLayout
     android:id="@+id/camera_preview"
     android:layout_width="1280px"
     android:layout_height="720px">
   </FrameLayout>
-   
+
    <FrameLayout
        android:layout_width="1280px"
-       android:layout_height="720px">
-      <Button
+       android:layout_height="720px" >
+
+       <Button
           android:id="@+id/button_capture"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
+          android:layout_width="130dp"
+          android:layout_height="70dp"
+          android:layout_marginLeft="1100px"
           android:layout_marginTop="300px"
-          android:layout_marginLeft="1180px"          
-          android:text="Capture" />
+          android:text="Capture" android:background="#333333"/>
+   </FrameLayout>
 
-      <ProgressBar
-          android:id="@+id/progress_bar"
-          style="?android:attr/progressBarStyleHorizontal"          
-          android:layout_width="1000px"
-          android:layout_marginTop="660px" 
-          android:layout_height="20px" 
-          android:layout_marginLeft="100px"/>
-
-	</FrameLayout>  
+   
+  
 </FrameLayout>
