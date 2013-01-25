@@ -1,14 +1,22 @@
-package firstsubtext.subtext;
+package photo.anytype;
 
 import java.io.File;
+
+import data.Shape;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.media.MediaMetadataRetriever;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup.LayoutParams;
 
 /***
  * This class handles the letters that are drawn on the screen
@@ -21,26 +29,33 @@ public class LetterInstance {
 	private boolean hasFocus;
 	private float  scale;
 	private float 	rotation;
-	private Bitmap bitmap;
+	private File bitmapPath;
 	private float[] pos;
 	private RectF bounds;
 	private Path p;
 	private Matrix m;
-	
+	private float rotation_x;
+	private float rotation_y;
+	private float bmap_width;
+	private float bmap_height;
+	private float instanceWidth;
+	private float instanceHeight;
 	
 	
 	public LetterInstance(int id){
 		
 		this.id = id;
-		this.hasFocus = true;
+		this.hasFocus = false;
 		this.scale = 0.5f;
 		this.rotation = 0;
 		this.p = new Path();
 		
-		File f = new File(Globals.getTestPath() + File.separator +Globals.intToChar(id)+".png");
-		bitmap = Globals.decodeSampledBitmapFromResource(f,600, 600);
-
-						
+		bitmapPath = new File(Globals.getTestPath() + File.separator +Globals.intToChar(id)+".png");
+		Bitmap bitmap = Globals.decodeSampledBitmapFromResource(bitmapPath,600, 600);
+		bmap_width = bitmap.getWidth();	
+		bmap_height = bitmap.getHeight();	
+		bitmap.recycle();
+		
 		pos = new float[2];
 		pos[0] = 0;
 		pos[1] = 0;
@@ -49,30 +64,71 @@ public class LetterInstance {
 		updateVars();
 	}
 	
-	//call this when position is updated, scale or rotation changes
+	
+
+	
 	private void updateVars(){
-		Path p = new Path();
+		int[] shape_ids = Globals.letters[id].getShapeIds();
+		int[] letter_x = Globals.letters[id].getXPoints();
+		int[] letter_y = Globals.letters[id].getYPoints();
+		float[] rots =  Globals.letters[id].getRotations();
+
+		p = new Path();
 		
-		p.lineTo(0, bitmap.getHeight());
-		p.lineTo(bitmap.getWidth(), bitmap.getHeight());
-		p.lineTo(bitmap.getWidth(), 0);
-		p.lineTo(0, 0);
-		
-		p.computeBounds(bounds, false);
-		m = new Matrix();
-		
-		try{
-			m.setRotate(rotation, bounds.centerX(), bounds.centerY());
-			m.setScale(scale, scale);
-		}catch(Exception e){
-			Log.d("Matrix", e.getMessage());
+		for(int j = 0; j < shape_ids.length; j++){
+			Shape s =  Globals.getShape(shape_ids[j]);
+			int[] offset = s.getOffset();
+			int[] x_points = s.getXPoints();
+			int[] y_points = s.getYPoints();
+						
+			Path sp = new Path();
+			sp.moveTo(x_points[0], y_points[0]);
+			for (int i = 1; i < x_points.length; i++)
+				sp.lineTo(x_points[i], y_points[i]);
+			sp.lineTo(x_points[0], y_points[0]);
+			
+			Matrix tm = new Matrix();
+			tm.preTranslate(letter_x[j], letter_y[j]);
+			tm.preRotate((float) Math.toDegrees(rots[j]));
+			tm.preTranslate(offset[0], offset[1]);
+			p.addPath(sp, tm);
+			
 		}
 		
-		p.transform(m, p);
-		p.offset(pos[0], pos[1]);
-		p.computeBounds(bounds, false);
+		m = new Matrix();
+		m.preTranslate(pos[0], pos[1]);
+		m.preScale(scale,scale);
+		
+		Path pcopy = new Path(p);
+		pcopy.transform(m);
+		pcopy.computeBounds(bounds, true);
+
+		m.preTranslate(bounds.width()/2, bounds.height()/2);
+		m.preRotate(rotation);
+		m.preTranslate(-bounds.width()/2, -bounds.height()/2);
+
+		
+		instanceWidth = bmap_width*scale/2;
+		instanceHeight = bmap_height*scale/2;
+		
+		p.transform(m);
+		p.computeBounds(bounds, true);
+		
+
 	}
 	
+	public float getBoundArea(){
+		return bounds.width()*bounds.height();
+	}
+	
+	
+	public float getInstanceHeight(){
+		return instanceHeight;
+	}
+	
+	public float getInstanceWidth(){
+		return instanceWidth;
+	}	
 	
 	public Matrix getM(){
 		return m;
@@ -83,7 +139,15 @@ public class LetterInstance {
 	}
 	
 	public boolean contains(int x, int y){
-		return bounds.contains(x, y);
+		Path temp = new Path(p);
+		temp.addCircle(x, y, 10, Path.Direction.CCW);
+		
+		RectF r_temp = new RectF();
+		temp.computeBounds(r_temp, true);
+		
+		if(r_temp.width()*r_temp.height() - bounds.width()*bounds.height() == 0) return true;
+		return false;
+		
 		
 	}
 	
@@ -94,12 +158,31 @@ public class LetterInstance {
 
 
 
-	public void setPos(float x, float y) {
-		this.pos[0] = x - (bitmap.getWidth()*scale)/2;
-		this.pos[1] = y - (bitmap.getHeight()*scale)/2;
+	public void setPosCentered(float x, float y) {
 		
+		float xoff = x - bounds.centerX();
+		float yoff = y - bounds.centerY();
+		
+		this.pos[0] += xoff;
+		this.pos[1] += yoff;
+	
 		//make sure to update the path
 		updateVars();
+		
+	}
+	
+	
+	public void scaleByPercent(double per){
+		double curWidth = scale*600; 
+		double newWidth = curWidth + (curWidth *per*0.01);
+		double prescale = scale;
+		
+
+		scale = (float) (newWidth / 600);
+		if(scale <= 0.1) scale = (float) 0.1;
+		
+		updateVars();
+		Log.d("Scale", "cur / new "+curWidth+" : "+newWidth+" scale before : "+prescale +" scale after "+scale);
 		
 	}
 	
@@ -107,11 +190,19 @@ public class LetterInstance {
 		scale = scale2;
 		updateVars();
 	}
+	
+	public void incRotations(double r){
+		rotation += r;
+		updateVars();
+	}
 		
 	
-	public void setRotations(float rots){
-		rotation = rots;
-		updateVars();
+	public void setRotations(float rots, float x, float y){
+//		rotation = rots;
+//		//this should be relative to the letter
+//		rotation_x = x - pos[0];
+//		rotation_y = y - pos[1];
+//		updateVars();
 	}
 
 
@@ -127,10 +218,10 @@ public class LetterInstance {
 		return id;
 	}
 
-	public Bitmap getBitmap() {
-		return bitmap;
+	public File getBitmapPath() {
+		return bitmapPath;
 	}
-
+	
 	public float getScale() {
 		return scale;
 	}

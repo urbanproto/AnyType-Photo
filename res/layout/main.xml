@@ -2,35 +2,34 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="horizontal" android:layout_gravity="center">
+    android:orientation="horizontal" android:background="#ffffff" android:filterTouchesWhenObscured="false">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_gravity="center_vertical|center_horizontal"
-        android:orientation="horizontal" >
+
+
+           <LinearLayout
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+              android:gravity="center_vertical|center_horizontal|center" android:layout_gravity="center_vertical|center_horizontal">
+
+               <Button
+                   android:id="@+id/button_new"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="Create New Photo Font" />
+
+               <Button
+                   android:id="@+id/button_load"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="Load Existing Font" />
+
+               <Button
+                   android:id="@+id/button_edit"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="Edit Font" />
+
     
-    <Button
-        android:id="@+id/button_new"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Create New Font"
-        android:layout_gravity="center_vertical|center_horizontal" />
-
-    <Button
-        android:id="@+id/button_new_video"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Create New Font with Video"
-        android:layout_gravity="center_vertical|center_horizontal" />
-
-
-
-    <Button
-        android:id="@+id/button_load"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|center_horizontal"
-        android:text="Load Existing Font" />
 </LinearLayout>
+
 </FrameLayout>

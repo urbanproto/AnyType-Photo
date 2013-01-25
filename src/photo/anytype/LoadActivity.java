@@ -1,4 +1,4 @@
-package firstsubtext.subtext;
+package photo.anytype;
 
 
 /**
@@ -19,16 +19,19 @@ import java.util.Iterator;
 
 import data.Letter;
 import data.Shape;
-import firstsubtext.subtext.R.id;
+import photo.anytype.R;
+import photo.anytype.R.id;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -45,6 +48,7 @@ public class LoadActivity extends Activity {
 	private static Globals environment;
 	private static int stage = 0; // keeps a record of which shape we're
 									// capturing
+	private double beginTime = System.currentTimeMillis();
 
 	public void loadShapes() {
 		int ndx = 0;
@@ -62,7 +66,6 @@ public class LoadActivity extends Activity {
 			try {
 
 				String str = "";
-				Log.d("Load Shape", "Switch " + id);
 
 				if(id == 0) is = this.getResources().openRawResource(R.raw.sa);
 				else if(id == 1) is = this.getResources().openRawResource(R.raw.sb);
@@ -70,8 +73,7 @@ public class LoadActivity extends Activity {
 				else if(id == 3)is = this.getResources().openRawResource(R.raw.sd);
 				else is = this.getResources().openRawResource(R.raw.se);
 				
-
-				Log.d("Load Shape", "Shape " + id + "Loaded");
+				
 				BufferedReader reader = new BufferedReader(
 						new InputStreamReader(is));
 				if (is != null) {
@@ -95,6 +97,8 @@ public class LoadActivity extends Activity {
 			while (it.hasNext()) {
 				x_points[ndx++] = (Integer) it.next();
 			}
+			
+			x.clear();
 
 			it = y.iterator();
 			int[] y_points = new int[y.size()];
@@ -102,6 +106,8 @@ public class LoadActivity extends Activity {
 			while (it.hasNext()) {
 				y_points[ndx++] = (Integer) it.next();
 			}
+			
+			y.clear();
 
 			environment.getShape(id).setPoints(x_points, y_points);
 
@@ -130,7 +136,7 @@ public class LoadActivity extends Activity {
 			try {
 
 				String str = "";
-				Log.d("Load Letter", "Switch " + id);
+
 
 				if(id == 0) is = this.getResources().openRawResource(R.raw.a);
 				else if(id == 1) is = this.getResources().openRawResource(R.raw.b);
@@ -160,12 +166,10 @@ public class LoadActivity extends Activity {
 				else is = this.getResources().openRawResource(R.raw.z);
 				
 
-				Log.d("Load Letter", "Letter " + id + "Loaded");
 				BufferedReader reader = new BufferedReader(
 						new InputStreamReader(is));
 				if (is != null) {
 					while ((str = reader.readLine()) != null) {
-						Log.d("Load Shape", "Reading: " + str);
 						data = str.split(",");
 						x.add(Integer.valueOf(data[0].trim()));
 						y.add(Integer.valueOf(data[1].trim()));
@@ -241,8 +245,12 @@ public class LoadActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-		environment = new Globals(
-				new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
+		Point size = new Point(getResources().getDisplayMetrics().widthPixels, getResources().getDisplayMetrics().heightPixels);
+
+		environment = new Globals(size, getResources().getDisplayMetrics().density, this);
+	
+		Globals.edit = false;
+			
 
 		loadShapes();
 		loadLetters();
@@ -262,13 +270,6 @@ public class LoadActivity extends Activity {
 			}
 		});
 		
-		Button new_font_video = (Button) findViewById(id.button_new_video);
-		new_font_video.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				startNewFontWithVideo();
-			}
-		});
 		
 		Button button_load = (Button) findViewById(id.button_load);
 		button_load.setOnClickListener(new View.OnClickListener() {
@@ -277,20 +278,40 @@ public class LoadActivity extends Activity {
 				loadExistingFont();
 			}
 		});
+		
+		
+		
+		
+		Button button_edit = (Button) findViewById(id.button_edit);
+		button_edit.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Globals.edit = true;
+				loadExistingFont();
+			}
+		});
+		
+		button_edit.setVisibility(View.VISIBLE);
 
 	}
 	
 	public void startNewFont(){
+		Globals.createNewDirectory(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
+		
+		double endTime = System.currentTimeMillis();
+		double time = endTime - beginTime;
+		Globals.writeToLog(this, this.getLocalClassName(), "CaptureActivity", time);
+		
 		Intent intent = new Intent(this, CaptureActivity.class);
 		startActivity(intent);
 	}
 	
-	public void startNewFontWithVideo(){
-		Intent intent = new Intent(this, VideoCaptureActivity.class);
-		startActivity(intent);
-	}
 	
 	public void loadExistingFont(){
+		double endTime = System.currentTimeMillis();
+		double time = endTime - beginTime;
+		Globals.writeToLog(this, this.getLocalClassName(), "LoadFontActivity", time);
+		
 		Intent intent = new Intent(this, LoadFontActivity.class);
 		startActivity(intent);
 	}
