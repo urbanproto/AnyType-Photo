@@ -20,10 +20,12 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -36,22 +38,84 @@ import android.view.ViewGroup.LayoutParams;
 
 //each activity is a state. 
 //this is the photo capture activity. It takes a picture 
-public class VideoViewCaptureActivity extends Activity implements OnTouchListener{
+public class ViewCaptureActivity extends Activity implements OnTouchListener{
 	
 
 	protected static final String TAG = "ViewCaptureActivity";
 	private DrawShapeOnTop shapeView;
+<<<<<<< Updated upstream
 	private boolean two_finger;
+=======
+	private boolean started_saving = false;
+	private double beginTime = System.currentTimeMillis();
+	private boolean dragging = false;
+	private Point last;
+	private ScaleGestureDetector sd;
+
+	
+	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+	    @Override
+	    public boolean onScale(ScaleGestureDetector detector) {
+	    	double scale = Globals.getScale(detector.getCurrentSpan());
+	    	shapeView.updateScale((float)scale);
+	    	shapeView.updateImageOffset(detector.getFocusX(), detector.getFocusY());
+	    	shapeView.invalidate();
+	        return true;
+	    }
+	}
+>>>>>>> Stashed changes
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+<<<<<<< Updated upstream
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.viewcapture);
+		setContentView(R.layout.videoviewcapture);
 
 		Log.d("View Activity", "View Activity Loaded");
+		
+		Button playVideo = (Button) findViewById(id.button_playback);
+		//first - see if there is a video attached to this stage
+		if(Globals.stageHasVideo()){
+			playVideo.setOnClickListener(new View.OnClickListener() {
+=======
+		
+		sd = new ScaleGestureDetector(ViewCaptureActivity.this, new ScaleListener());
 
+		// Get current size of heap in bytes
+		long heapSize = Runtime.getRuntime().totalMemory();
+
+		// Get maximum size of heap in bytes. The heap cannot grow beyond this size.
+		// Any attempt will result in an OutOfMemoryException.
+		long heapMaxSize = Runtime.getRuntime().maxMemory();
+
+		// Get amount of free memory within the heap in bytes. This size will increase
+		// after garbage collection and decrease as new objects are created.
+		long heapFreeSize = Runtime.getRuntime().freeMemory();
+		
+		Log.d("Memory", "view capture "+heapSize +" "+heapMaxSize+" "+(float)heapSize/(float)heapMaxSize*100+" "+(float)heapFreeSize/(float)heapMaxSize*100);
+		
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.viewcapture);
+		
+		// add accept button listener
+		Button acceptButton = (Button) findViewById(id.button_accept);
+		acceptButton.setBackgroundColor(Color.rgb(255, 33, 177));
+		acceptButton.setOnTouchListener(new View.OnTouchListener() {
+			
+>>>>>>> Stashed changes
+			@Override
+			public void onClick(View v) {
+				//launch the video playback intent
+				openVideoPlayer();
+			}
+		});
+		}else{
+			playVideo.setVisibility(View.INVISIBLE);
+		}
+		
+		
 		
 		// add accept button listener
 		Button acceptButton = (Button) findViewById(id.button_accept);
@@ -85,7 +149,6 @@ public class VideoViewCaptureActivity extends Activity implements OnTouchListene
 				
 				//end save the picture
 				Globals.nextStage();
-				
 				finish();
 			}
 		});
@@ -106,18 +169,27 @@ public class VideoViewCaptureActivity extends Activity implements OnTouchListene
 		shapeView = new DrawShapeOnTop(this, Globals.getStageShape(), true);
 		shapeView.setOnTouchListener(this);
 		FrameLayout preview = (FrameLayout) findViewById(id.camera_preview);
+<<<<<<< Updated upstream
 		preview.addView(shapeView, new LayoutParams(LayoutParams.WRAP_CONTENT,
 				LayoutParams.WRAP_CONTENT));
+=======
+		//preview.addView(shapeView, new LayoutParams(Globals.preview_size.x,Globals.preview_size.y));
+		preview.addView(shapeView, new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
+		
+>>>>>>> Stashed changes
 
 	}
 	
+	
+	public void openVideoPlayer(){
+		Intent intent = new Intent(this, VideoPlayerActivity.class);
+		startActivity(intent);
+	}
 	
 	// Implement the OnTouchListener callback
 	public boolean onTouch(View v, MotionEvent event) {
 		Log.d("Touch", "Action: " + event.getAction());
 		Log.d("Touch", "Action Index: " + event.getActionIndex());
-		
-		
 
 		int selected;
 
@@ -136,10 +208,8 @@ public class VideoViewCaptureActivity extends Activity implements OnTouchListene
 		return true;
 
 	}
-	
-
-	
-	
-
 
 }
+
+
+
